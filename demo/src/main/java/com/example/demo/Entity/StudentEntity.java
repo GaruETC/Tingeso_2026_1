@@ -2,11 +2,15 @@ package com.example.demo.Entity;
 
 import com.example.demo.Entity.Enum.StudentStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "students")
 public class StudentEntity {
@@ -22,13 +26,13 @@ public class StudentEntity {
     private String email;
 
     private String fullName;
-    private boolean matriculation;
+    private boolean matriculation = false;
 
     @Column(nullable = false)
     private Long careerId;
     @Column(nullable = false)
     private Long studyPlanId;
-    private List<String> subject;// cuidado con esto
+    private List<String> sectionsId;// cuidado con esto
 
     @Enumerated(EnumType.STRING)
     private StudentStatus status = StudentStatus.REGULAR;

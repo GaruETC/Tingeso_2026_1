@@ -17,6 +17,4 @@ public class AcademicTermEntity {
 
     private String period;
     private AcademicTermStatus status = AcademicTermStatus.ABIERTO;
-
-    private List<Long> sectionIds; // cuidado con esto
 }

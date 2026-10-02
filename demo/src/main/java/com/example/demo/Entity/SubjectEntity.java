@@ -19,7 +19,7 @@ public class SubjectEntity {
     private String name;
     private String TEL;
     private int SCT;
-    private List<Long> prerequisiteId; // cuidado con esto
+    private List<Long> prerequisiteIds; // cuidado con esto
     private int semester;
 
     private Long studyPlanId;

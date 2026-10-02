@@ -1,6 +1,6 @@
 package com.example.demo.Entity.Enum;
 
-public enum StudyPlanValidity {
+public enum StudyPlanStatus {
     VIGENTE,
     NO_VIGENTE
 }

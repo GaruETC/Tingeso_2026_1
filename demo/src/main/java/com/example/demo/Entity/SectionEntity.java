@@ -16,7 +16,7 @@ public class SectionEntity {
 
     private Long teacherId;
     private Long subjectId;
-    private Long sectionId;
+    private Long AcademicTermId;
     private List<String> schedule;
     private int maxCapacity;
 

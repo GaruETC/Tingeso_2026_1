@@ -1,9 +1,8 @@
 package com.example.demo.Entity;
 
-import com.example.demo.Entity.Enum.StudyPlanValidity;
+import com.example.demo.Entity.Enum.StudyPlanStatus;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.AnyDiscriminatorImplicitValues;
 
 @Data
 @Entity
@@ -18,5 +17,5 @@ public class StudyPlanEntity {
     private Long careerId;
 
     @Enumerated(EnumType.STRING)
-    private StudyPlanValidity validity = StudyPlanValidity.VIGENTE;
+    private StudyPlanStatus status = StudyPlanStatus.VIGENTE;
 }
