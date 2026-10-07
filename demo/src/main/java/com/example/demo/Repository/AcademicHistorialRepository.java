@@ -11,4 +11,6 @@ public interface AcademicHistorialRepository extends JpaRepository<AcademicHisto
     List<AcademicHistorialEntity> findByStudentId(Long studentId);
 
     boolean existsByStudentId(Long studentId);
+
+    boolean existsBySubjectId(Long subjectId);
 }

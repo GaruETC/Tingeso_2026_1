@@ -32,7 +32,6 @@ public class StudentEntity {
     private Long careerId;
     @Column(nullable = false)
     private Long studyPlanId;
-    private List<String> sectionsId;// cuidado con esto
 
     @Enumerated(EnumType.STRING)
     private StudentStatus status = StudentStatus.REGULAR;

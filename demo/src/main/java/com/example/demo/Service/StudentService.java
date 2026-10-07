@@ -1,12 +1,11 @@
 package com.example.demo.Service;
 
+import com.example.demo.Entity.CareerEntity;
+import com.example.demo.Entity.Enum.CareerStatus;
 import com.example.demo.Entity.StudentEntity;
 import com.example.demo.Entity.StudyPlanEntity;
 import com.example.demo.Entity.Enum.StudyPlanStatus;
-import com.example.demo.Repository.AcademicHistorialRepository;
-import com.example.demo.Repository.RegistrationRepository;
-import com.example.demo.Repository.StudentRepository;
-import com.example.demo.Repository.StudyPlanRepository;
+import com.example.demo.Repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -20,16 +19,18 @@ public class StudentService {
     private final RegistrationRepository registrationRepository;
     private final AcademicHistorialRepository academicHistorialRepository;
     private final StudyPlanRepository studyPlanRepository;
+    private final CareerRepository careerRepository;
 
     public StudentService(
             StudentRepository studentRepository,
             RegistrationRepository registrationRepository,
             AcademicHistorialRepository academicHistorialRepository,
-            StudyPlanRepository studyPlanRepository) {
+            StudyPlanRepository studyPlanRepository, CareerRepository careerRepository) {
         this.studentRepository = studentRepository;
         this.registrationRepository = registrationRepository;
         this.academicHistorialRepository = academicHistorialRepository;
         this.studyPlanRepository = studyPlanRepository;
+        this.careerRepository = careerRepository;
     }
 
     public List<StudentEntity> getStudents(){
@@ -86,11 +87,20 @@ public class StudentService {
     }
 
     public StudentEntity registerStudent(String run, String fullName, String email, Long careerId) {
+        CareerEntity career = careerRepository.findById(careerId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "No se encontró la carrera con id: " + careerId
+                ));
+        if (career.getStatus().equals(CareerStatus.INACTIVA)){
+            throw new IllegalStateException(
+                    "No se puede registrar en la carrera ya que esta inactiva"
+            );
+        }
+
         StudyPlanEntity studyPlan = studyPlanRepository
                 .findByCareerIdAndStatus(careerId, StudyPlanStatus.VIGENTE)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "No existe un plan de estudio vigente para la carrera con id: "
-                                + careerId
+                        "No existe un plan de estudio vigente para la carrera con id: " + careerId
                 ));
 
         StudentEntity student = new StudentEntity();

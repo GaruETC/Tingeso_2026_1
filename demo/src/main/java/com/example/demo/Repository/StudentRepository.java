@@ -15,4 +15,8 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
     List<StudentEntity> findByStudyPlanId(Long studyPlanId);
 
     List<StudentEntity> findByStatus(StudentStatus status);
+
+    boolean existsByStudyPlanId(Long studyPlanId);
+
+    boolean existsByCareerId(Long careerId);
 }

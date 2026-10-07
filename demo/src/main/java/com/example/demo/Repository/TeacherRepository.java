@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TeacherRepository extends JpaRepository<TeacherEntity, Long> {
 
-    TeacherEntity finByRun(String run);
+    TeacherEntity findByRun(String run);
 
     TeacherEntity findByFullName(String fullName);
 
