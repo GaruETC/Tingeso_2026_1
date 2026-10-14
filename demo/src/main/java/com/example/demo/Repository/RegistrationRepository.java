@@ -9,8 +9,6 @@ public interface RegistrationRepository extends JpaRepository<RegistrationEntity
 
     List<RegistrationEntity> findByStudentId(Long studentId);
 
-    List<RegistrationEntity> findBySubjectId(Long subjectId);
-
     List<RegistrationEntity> findBySectionId(Long sectionId);
 
     List<RegistrationEntity> findByAcademicTermId(Long academicTermId);
@@ -18,4 +16,10 @@ public interface RegistrationRepository extends JpaRepository<RegistrationEntity
     List<RegistrationEntity> findByStudentIdAndAcademicTermId(Long studentId, Long academicTermId);
 
     boolean existsByStudentId(Long studentId);
+
+    boolean existsBySectionId(Long sectionId);
+
+    boolean existsByStudentIdAndSectionId(Long studentId, Long sectionId);
+
+    Long countBySectionId(Long sectionId);
 }

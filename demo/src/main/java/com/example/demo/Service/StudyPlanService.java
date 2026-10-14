@@ -25,21 +25,17 @@ public class StudyPlanService {
 
     }
 
-    public StudyPlanEntity saveStudyPlan(StudyPlanEntity studyPlan){
-        return studyPlanRepository.save(studyPlan);
-    }
-
     public StudyPlanEntity createStudyPlan(Long careerId){
-        StudyPlanEntity currentStudyPlan = studyPlanRepository
-                .findByCareerIdAndStatus(careerId, StudyPlanStatus.VIGENTE)
-                .orElseThrow(() -> new RuntimeException(
-                        "No se econtró un plan de estudio vigente para la carrera con id: " + careerId
-                ));
-        currentStudyPlan.setStatus(StudyPlanStatus.NO_VIGENTE);
+        studyPlanRepository.findByCareerIdAndStatus(careerId, StudyPlanStatus.CURRENT)
+                        .ifPresent(previousPlan -> {
+                            previousPlan.setStatus(StudyPlanStatus.NOT_CURRENT);
+                            studyPlanRepository.save(previousPlan);
+                        });
 
         StudyPlanEntity studyPlan = new StudyPlanEntity();
         studyPlan.setCareerId(careerId);
-        return studyPlan;
+        studyPlan.setStatus(StudyPlanStatus.CURRENT);
+        return studyPlanRepository.save(studyPlan);
     }
 
     public void deleteStudyPlan(Long studyPlanId){

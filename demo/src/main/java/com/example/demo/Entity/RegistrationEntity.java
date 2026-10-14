@@ -15,10 +15,9 @@ public class RegistrationEntity {
     private Long id;
 
     private LocalDate registrationDate;
-    private float grade;
+    private Float grade;
 
     private Long studentId;
-    private Long subjectId;
     private Long sectionId;
     private Long academicTermId;
 }

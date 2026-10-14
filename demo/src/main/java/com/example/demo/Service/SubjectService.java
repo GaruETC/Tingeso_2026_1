@@ -1,5 +1,6 @@
 package com.example.demo.Service;
 
+import com.example.demo.DTO.SubjectDto;
 import com.example.demo.Entity.StudyPlanEntity;
 import com.example.demo.Entity.SubjectEntity;
 import com.example.demo.Repository.AcademicHistorialRepository;
@@ -42,7 +43,54 @@ public class SubjectService {
                 ));
     }
 
-    public SubjectEntity saveSubject(SubjectEntity subject) {
+    public SubjectEntity registerSubject(SubjectDto subjectDto) {
+        if (subjectRepository.existsByCode(subjectDto.code())) {
+            throw new IllegalArgumentException(
+                    "Ya se encuentra registrada una asignatura con el código " + subjectDto.code()
+            );
+        }
+
+        SubjectEntity subject = toEntity(subjectDto);
+        validateSubject(subject);
+        return subjectRepository.save(subject);
+    }
+
+    public SubjectEntity updateSubject(Long subjectId, SubjectDto subjectDto) {
+        SubjectEntity currentSubject = getSubjectById(subjectId);
+
+        if (subjectRepository.existsByCodeAndIdNot(subjectDto.code(), subjectId)) {
+            throw new IllegalArgumentException(
+                    "Ya se encuentra registrada una asignatura con el código " + subjectDto.code()
+            );
+        }
+
+        SubjectEntity updatedSubject = toEntity(subjectDto);
+        validateSubject(updatedSubject);
+
+        currentSubject.setCode(updatedSubject.getCode());
+        currentSubject.setName(updatedSubject.getName());
+        currentSubject.setTEL(updatedSubject.getTEL());
+        currentSubject.setSCT(updatedSubject.getSCT());
+        currentSubject.setSemester(updatedSubject.getSemester());
+        currentSubject.setPrerequisiteIds(updatedSubject.getPrerequisiteIds());
+        currentSubject.setStudyPlanId(updatedSubject.getStudyPlanId());
+
+        return subjectRepository.save(currentSubject);
+    }
+
+    private SubjectEntity toEntity(SubjectDto subjectDto) {
+        SubjectEntity subject = new SubjectEntity();
+        subject.setCode(subjectDto.code());
+        subject.setName(subjectDto.name());
+        subject.setTEL(subjectDto.TEL());
+        subject.setSCT(subjectDto.SCT());
+        subject.setSemester(subjectDto.semester());
+        subject.setPrerequisiteIds(subjectDto.prerequisiteIds());
+        subject.setStudyPlanId(subjectDto.studyPlanId());
+        return subject;
+    }
+
+    private void validateSubject(SubjectEntity subject) {
         if (!(subject.getSCT() > 0 && subject.getSCT() <= 7)){
             throw new IllegalArgumentException(
                     "El SCT debe ser mayor a 0 o menor o igual a 7"
@@ -69,21 +117,18 @@ public class SubjectService {
             for (SubjectEntity prereq : prerequisites) {
                 if (!prereq.getStudyPlanId().equals(subject.getStudyPlanId())) {
                     throw new IllegalArgumentException(
-                            String.format("El prerequisito '%s' (ID: %d) no pertenece al plan de estudio %d",
-                                    prereq.getName(), prereq.getId(), subject.getStudyPlanId())
+                            "El prerequisito"+ prereq.getId() +"no pertenece al plan de estudio" + subject.getStudyPlanId()
                     );
                 }
 
-                // que el prerequisito sea de semestre anterior
+                // prerequisite be from a previous semester
                 if (prereq.getSemester() >= subject.getSemester()) {
                     throw new IllegalArgumentException(
-                            String.format("El prerequisito '%s' (Semestre %d) debe pertenecer a un semestre estrictamente anterior",
-                                    prereq.getName(), prereq.getSemester())
+                            "El prerequisito"+ prereq.getId() +"debe pertenecer a un semestre estrictamente anterior"
                     );
                 }
             }
         }
-        return subjectRepository.save(subject);
     }
 
     public void deleteSubject(Long subjectId){

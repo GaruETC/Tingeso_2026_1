@@ -14,4 +14,8 @@ public interface CareerRepository extends JpaRepository<CareerEntity, Long> {
     Optional<CareerEntity> findByName(String name);
 
     List<CareerEntity> findByStatus(CareerStatus status);
+
+    boolean existsByCode(String code);
+
+    boolean existsByCodeAndIdNot(String code, Long id);
 }

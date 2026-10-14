@@ -2,15 +2,16 @@ package com.example.demo.Service;
 
 import com.example.demo.Entity.CareerEntity;
 import com.example.demo.Entity.Enum.CareerStatus;
+import com.example.demo.Entity.Enum.StudentStatus;
 import com.example.demo.Entity.StudentEntity;
 import com.example.demo.Entity.StudyPlanEntity;
 import com.example.demo.Entity.Enum.StudyPlanStatus;
+import com.example.demo.DTO.StudentDto;
 import com.example.demo.Repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class StudentService {
@@ -37,10 +38,6 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
-    public StudentEntity saveStudent(StudentEntity student){
-        return studentRepository.save(student);
-    }
-
     public StudentEntity getStudentById(Long id){
         return studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(
@@ -55,20 +52,41 @@ public class StudentService {
                 ));
     }
 
-    public StudentEntity updateStudent(StudentEntity student){
-        StudentEntity currentStudent = getStudentById(student.getId());
+    public StudentEntity updateStudent(Long studentId, StudentDto studentDto){
+        StudentEntity currentStudent = getStudentById(studentId);
+        String cleanRun = studentDto.run().toUpperCase();
+        String cleanEmail = studentDto.email().toLowerCase();
 
-        boolean careerChanged = !currentStudent.getCareerId().equals(student.getCareerId());
-        boolean studyPlanChanged = !currentStudent.getStudyPlanId().equals(student.getStudyPlanId());
+        if (studentRepository.existsByRunAndIdNot(cleanRun, studentId)) {
+            throw new IllegalArgumentException(
+                    "Ya se encuentra registrado en el sistema el run " + cleanRun
+            );
+        }
+        if (studentRepository.existsByEmailAndIdNot(cleanEmail, studentId)) {
+            throw new IllegalArgumentException(
+                    "Ya se encuentra registrado en el sistema el email " + cleanEmail
+            );
+        }
 
-        if ((careerChanged || studyPlanChanged) && hasRecords(student.getId())) {
+        boolean careerChanged = !currentStudent.getCareerId().equals(studentDto.careerId());
+        boolean studyPlanChanged = !currentStudent.getStudyPlanId().equals(studentDto.studyPlanId());
+
+        if ((careerChanged || studyPlanChanged) && hasRecords(studentId)) {
             throw new IllegalStateException(
                     "No se puede modificar la carrera o el plan de estudios "
                             + "porque el estudiante tiene inscripciones o historial académico"
             );
         }
 
-        return studentRepository.save(student);
+        currentStudent.setRun(cleanRun);
+        currentStudent.setEmail(cleanEmail);
+        currentStudent.setFullName(studentDto.fullName());
+        currentStudent.setMatriculation(studentDto.matriculation());
+        currentStudent.setCareerId(studentDto.careerId());
+        currentStudent.setStudyPlanId(studentDto.studyPlanId());
+        currentStudent.setStatus(studentDto.status());
+
+        return studentRepository.save(currentStudent);
     }
 
     public boolean hasRecords(Long studentId){
@@ -86,31 +104,49 @@ public class StudentService {
         studentRepository.delete(student);
     }
 
-    public StudentEntity registerStudent(String run, String fullName, String email, Long careerId) {
-        CareerEntity career = careerRepository.findById(careerId)
+    public StudentEntity registerStudent(StudentDto studentDto) {
+        // Normalize RUT and email
+        String cleanRun = studentDto.run().toUpperCase();
+        String cleanEmail = studentDto.email().toLowerCase();
+
+        // Check that there is no existing teacher with the same RUT or email
+        if (studentRepository.existsByRun(cleanRun)){
+            throw new IllegalArgumentException(
+                    "Ya se encuentra registrado en el sistema el run " + cleanRun
+            );
+        }
+        if (studentRepository.existsByEmail(cleanEmail)){
+            throw new IllegalArgumentException(
+                    "Ya se encuentra registrado en el sistema el email " + cleanEmail
+            );
+        }
+
+        CareerEntity career = careerRepository.findById(studentDto.careerId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "No se encontró la carrera con id: " + careerId
+                        "No se encontró la carrera con id: " + studentDto.careerId()
                 ));
-        if (career.getStatus().equals(CareerStatus.INACTIVA)){
+        if (career.getStatus().equals(CareerStatus.INACTIVE)){
             throw new IllegalStateException(
                     "No se puede registrar en la carrera ya que esta inactiva"
             );
         }
 
         StudyPlanEntity studyPlan = studyPlanRepository
-                .findByCareerIdAndStatus(careerId, StudyPlanStatus.VIGENTE)
+                .findByCareerIdAndStatus(studentDto.careerId(), StudyPlanStatus.CURRENT)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "No existe un plan de estudio vigente para la carrera con id: " + careerId
+                        "No existe un plan de estudio vigente para la carrera con id: " + studentDto.careerId()
                 ));
 
         StudentEntity student = new StudentEntity();
-        student.setRun(run);
-        student.setFullName(fullName);
-        student.setEmail(email);
-        student.setCareerId(careerId);
+        student.setRun(cleanRun);
+        student.setEmail(cleanEmail);
+        student.setFullName(studentDto.fullName());
+        student.setMatriculation(studentDto.matriculation());
+        student.setCareerId(studentDto.careerId());
         student.setStudyPlanId(studyPlan.getId());
+        student.setStatus(StudentStatus.REGULAR);
 
-        return saveStudent(student);
+        return studentRepository.save(student);
     }
 
 

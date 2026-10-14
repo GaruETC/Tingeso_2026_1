@@ -16,5 +16,5 @@ public class AcademicTermEntity {
     private Long id;
 
     private String period;
-    private AcademicTermStatus status = AcademicTermStatus.ABIERTO;
+    private AcademicTermStatus status = AcademicTermStatus.OPEN;
 }

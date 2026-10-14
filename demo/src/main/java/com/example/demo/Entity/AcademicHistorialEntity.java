@@ -17,7 +17,6 @@ public class AcademicHistorialEntity {
     private Long subjectId;
     private Long academicTermId;
 
-    private int failedNumber;
     private float finalGrade;
     private AcademicHistorialStatus status;
 }

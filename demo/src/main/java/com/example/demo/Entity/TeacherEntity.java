@@ -26,5 +26,5 @@ public class TeacherEntity {
     private String degree;
 
     @Enumerated(EnumType.STRING)
-    private TeacherStatus status = TeacherStatus.ACTIVO;
+    private TeacherStatus status = TeacherStatus.ACTIVE;
 }

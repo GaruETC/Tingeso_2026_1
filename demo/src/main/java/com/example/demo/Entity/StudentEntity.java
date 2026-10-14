@@ -35,4 +35,5 @@ public class StudentEntity {
 
     @Enumerated(EnumType.STRING)
     private StudentStatus status = StudentStatus.REGULAR;
+
 }
