@@ -6,6 +6,8 @@ import com.example.demo.Repository.StudentRepository;
 import com.example.demo.Repository.StudyPlanRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class StudyPlanService {
 
@@ -17,12 +19,19 @@ public class StudyPlanService {
         this.studentRepository = studentRepository;
     }
 
+    public List<StudyPlanEntity> getStudyPlans(){
+        return studyPlanRepository.findAll();
+    }
+
     public StudyPlanEntity getStudyPlanById(Long studyPlanId){
         return studyPlanRepository.findById(studyPlanId)
                 .orElseThrow(() -> new RuntimeException(
                 "No se encontró el plan de estudio con id: " + studyPlanId
         ));
+    }
 
+    public List<StudyPlanEntity> getStudyPlansByCareerId(Long careerId){
+        return studyPlanRepository.findByCareerId(careerId);
     }
 
     public StudyPlanEntity createStudyPlan(Long careerId){

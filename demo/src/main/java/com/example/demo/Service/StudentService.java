@@ -38,6 +38,10 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
+    public List<StudentEntity> getStudentsByStatus(StudentStatus status){
+        return studentRepository.findByStatus(status);
+    }
+
     public StudentEntity getStudentById(Long id){
         return studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(
@@ -81,10 +85,8 @@ public class StudentService {
         currentStudent.setRun(cleanRun);
         currentStudent.setEmail(cleanEmail);
         currentStudent.setFullName(studentDto.fullName());
-        currentStudent.setMatriculation(studentDto.matriculation());
         currentStudent.setCareerId(studentDto.careerId());
         currentStudent.setStudyPlanId(studentDto.studyPlanId());
-        currentStudent.setStatus(studentDto.status());
 
         return studentRepository.save(currentStudent);
     }
@@ -141,13 +143,27 @@ public class StudentService {
         student.setRun(cleanRun);
         student.setEmail(cleanEmail);
         student.setFullName(studentDto.fullName());
-        student.setMatriculation(studentDto.matriculation());
         student.setCareerId(studentDto.careerId());
         student.setStudyPlanId(studyPlan.getId());
+        student.setMatriculation(true);
         student.setStatus(StudentStatus.REGULAR);
 
         return studentRepository.save(student);
     }
 
+    public void updateStudentStatus(Long id, StudentStatus status){
+        StudentEntity student = studentRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException(
+                        "Estudiante no encontrado: " + id
+                ));
+        boolean canUpdate = status == StudentStatus.REGULAR || status == StudentStatus.DEFERRED || status == StudentStatus.TEMPORARY_WITHDRAWAL;
+        if (!canUpdate){
+            throw new IllegalStateException(
+                    "Solo se puede modificar REGULAR, DEFERRED y TEMPORARY_WITHDRAWAL"
+            );
+        }
 
+        student.setStatus(status);
+        studentRepository.save(student);
+    }
 }

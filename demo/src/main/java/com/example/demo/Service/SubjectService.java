@@ -7,6 +7,8 @@ import com.example.demo.Repository.AcademicHistorialRepository;
 import com.example.demo.Repository.SubjectRepository;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.Subject;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -21,6 +23,16 @@ public class SubjectService {
     }
 
     public List<SubjectEntity> getSubjects() {return subjectRepository.findAll(); }
+
+    public List<SubjectEntity> getPrerequisites(Long subjectId){
+        SubjectEntity subject = getSubjectById(subjectId);
+
+        if (subject.getPrerequisiteIds() == null || subject.getPrerequisiteIds().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return subjectRepository.findAllById(subject.getPrerequisiteIds());
+    }
 
     public SubjectEntity getSubjectById(Long id){
         return subjectRepository.findById(id).
@@ -41,6 +53,10 @@ public class SubjectService {
                 orElseThrow(() -> new RuntimeException(
                         "No se encontró una asignatura con el nombre: " + name
                 ));
+    }
+
+    public List<SubjectEntity> getSubjectsByStudyPlanId(Long studyPlanId){
+        return subjectRepository.findByStudyPlanId(studyPlanId);
     }
 
     public SubjectEntity registerSubject(SubjectDto subjectDto) {

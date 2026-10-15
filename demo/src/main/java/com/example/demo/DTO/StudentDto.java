@@ -6,9 +6,7 @@ public record StudentDto(
         String run,
         String email,
         String fullName,
-        boolean matriculation,
         Long careerId,
-        Long studyPlanId,
-        StudentStatus status
+        Long studyPlanId
 ) {
 }

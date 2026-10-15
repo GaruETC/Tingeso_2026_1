@@ -28,7 +28,7 @@ public class SubjectEntity {
             joinColumns = @JoinColumn(name = "subject_id")
     )
     @Column(name = "prerequisite_id")
-    private List<Long> prerequisiteIds = new ArrayList<>(); // cuidado con esto
+    private List<Long> prerequisiteIds = new ArrayList<>(); // WARNING WARNING WARNING
 
     private Long studyPlanId;
 }

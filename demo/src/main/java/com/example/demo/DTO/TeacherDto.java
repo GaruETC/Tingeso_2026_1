@@ -7,7 +7,6 @@ public record TeacherDto(
         String email,
         String fullName,
         String title,
-        String degree,
-        TeacherStatus status
+        String degree
 ) {
 }

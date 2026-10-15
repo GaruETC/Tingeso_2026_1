@@ -1,8 +1,10 @@
 package com.example.demo.Service;
 
 import com.example.demo.DTO.TeacherDto;
+import com.example.demo.Entity.Enum.AcademicTermStatus;
 import com.example.demo.Entity.Enum.TeacherStatus;
 import com.example.demo.Entity.TeacherEntity;
+import com.example.demo.Repository.AcademicTermRepository;
 import com.example.demo.Repository.SectionRepository;
 import com.example.demo.Repository.TeacherRepository;
 import org.springframework.stereotype.Service;
@@ -22,32 +24,40 @@ public class TeacherService {
         this.academicTermService = academicTermService;
     }
 
-    TeacherEntity getTeacherById(Long teacherId){
+    public List<TeacherEntity> getTeachers(){
+        return teacherRepository.findAll();
+    }
+
+    public List<TeacherEntity> getTeachersByStatus(TeacherStatus status){
+        return teacherRepository.findByStatus(status);
+    }
+
+    public TeacherEntity getTeacherById(Long teacherId){
         return teacherRepository.findById(teacherId).
                 orElseThrow(() -> new RuntimeException(
                         "No se encontró un profesor con el id " + teacherId
                 ));
     }
 
-    TeacherEntity getTeacherByRun(String run){
+    public TeacherEntity getTeacherByRun(String run){
         return teacherRepository.findByRun(run).
                 orElseThrow(() -> new RuntimeException(
                         "No se encontró un profesor con el run " + run
                 ));
     }
 
-    TeacherEntity getTeacherByFullName(String fullName){
+    public TeacherEntity getTeacherByFullName(String fullName){
         return teacherRepository.findByFullName(fullName).
                 orElseThrow(() -> new RuntimeException(
                         "No se encontró un profesor con el nombre completo " + fullName
                 ));
     }
 
-    List<TeacherEntity> getActiveTeachers(){
+    public List<TeacherEntity> getActiveTeachers(){
         return teacherRepository.findByStatus(TeacherStatus.ACTIVE);
     }
 
-    TeacherEntity registerTeacher(TeacherDto teacherDto){
+    public TeacherEntity registerTeacher(TeacherDto teacherDto){
         // Normalize RUT and email
         String cleanRun = teacherDto.run().toUpperCase();
         String cleanEmail = teacherDto.email().toLowerCase();
@@ -75,8 +85,9 @@ public class TeacherService {
         return teacherRepository.save(teacher);
     }
 
-    void deleteTeacher(TeacherEntity teacher){
-        if (sectionRepository.existsByTeacherId(teacher.getId())){
+    public void deleteTeacher(Long id){
+        TeacherEntity teacher = getTeacherById(id);
+        if (sectionRepository.existsByTeacherId(id)){
             throw new IllegalArgumentException(
                     "No se puede eliminar el profesor " + teacher.getId() + " ya que tiene secciones asociadas"
             );
@@ -84,7 +95,7 @@ public class TeacherService {
         teacherRepository.delete(teacher);
     }
 
-    TeacherEntity updateTeacher(Long teacherId, TeacherDto teacherDto){
+    public TeacherEntity updateTeacher(Long teacherId, TeacherDto teacherDto){
         TeacherEntity currentTeacher = getTeacherById(teacherId);
         String cleanRun = teacherDto.run().toUpperCase();
         String cleanEmail = teacherDto.email().toLowerCase();
@@ -100,26 +111,32 @@ public class TeacherService {
             );
         }
 
-        boolean statusChangedtoInactive = currentTeacher.getStatus().equals(TeacherStatus.ACTIVE) &&
-                                        teacherDto.status().equals(TeacherStatus.INACTIVE);
-
-        if (statusChangedtoInactive){
-            academicTermService.getActiveTerm().ifPresent(openTerm -> {
-                if (sectionRepository.existsByTeacherIdAndAcademicTermId(teacherId, openTerm.getId())){
-                    throw new IllegalStateException(
-                            "El profesor tiene secciones asociadas en un periodo academico activo"
-                    );
-                }
-            });
-        }
-
         currentTeacher.setRun(cleanRun);
         currentTeacher.setEmail(cleanEmail);
         currentTeacher.setFullName(teacherDto.fullName());
         currentTeacher.setTitle(teacherDto.title());
         currentTeacher.setDegree(teacherDto.degree());
-        currentTeacher.setStatus(teacherDto.status());
 
         return teacherRepository.save(currentTeacher);
+    }
+
+    public void updateTeacherStatus(Long teacherId, TeacherStatus status){
+        TeacherEntity currentTeacher = getTeacherById(teacherId);
+
+        if (currentTeacher.getStatus() == status) {
+            return;
+        }
+
+        if (status == TeacherStatus.INACTIVE) {
+            academicTermService.getActiveTerm().ifPresent(openTerm -> {
+                if (sectionRepository.existsByTeacherIdAndAcademicTermId(teacherId, openTerm.getId())) {
+                    throw new IllegalStateException(
+                            "No se puede cambiar el estado a INACTIVO mientras el docente tenga secciones asignadas en un período académico ABIERTO"
+                    );
+                }
+            });
+        }
+        currentTeacher.setStatus(status);
+        teacherRepository.save(currentTeacher);
     }
 }

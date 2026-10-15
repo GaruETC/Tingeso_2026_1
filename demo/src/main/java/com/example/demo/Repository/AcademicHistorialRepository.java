@@ -22,4 +22,6 @@ public interface AcademicHistorialRepository extends JpaRepository<AcademicHisto
     int countByStudentIdAndSubjectIdAndStatus(Long studentId, Long subjectId, AcademicHistorialStatus status);
 
     int countByStudentIdAndStatus(Long studentId, AcademicHistorialStatus status);
+
+    List<AcademicHistorialEntity> findByStudentIdAndStatus(Long studentId, AcademicHistorialStatus status);
 }
