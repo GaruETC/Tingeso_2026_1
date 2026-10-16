@@ -96,9 +96,10 @@ public class SubjectService {
 
     private SubjectEntity toEntity(SubjectDto subjectDto) {
         SubjectEntity subject = new SubjectEntity();
+        String TEL = validateTel(subjectDto.theoryHours(), subjectDto.exerciseHours(), subjectDto.laboratoryHours());
         subject.setCode(subjectDto.code());
         subject.setName(subjectDto.name());
-        subject.setTEL(subjectDto.TEL());
+        subject.setTEL(TEL);
         subject.setSCT(subjectDto.SCT());
         subject.setSemester(subjectDto.semester());
         subject.setPrerequisiteIds(subjectDto.prerequisiteIds());
@@ -110,15 +111,6 @@ public class SubjectService {
         if (!(subject.getSCT() > 0 && subject.getSCT() <= 7)){
             throw new IllegalArgumentException(
                     "El SCT debe ser mayor a 0 o menor o igual a 7"
-            );
-        }
-        String[] telNumbers = subject.getTEL().split("-");
-        int suma = Integer.parseInt(telNumbers[0])
-                + Integer.parseInt(telNumbers[1])
-                + Integer.parseInt(telNumbers[2]);
-        if (suma >= 8){
-            throw new IllegalArgumentException(
-                    "Las horas semanales no deben ser 8 o mayor"
             );
         }
 
@@ -145,6 +137,18 @@ public class SubjectService {
                 }
             }
         }
+    }
+
+    public String validateTel(int theoryHours, int exerciseHours, int laboratoryHours){
+        int totalHours = theoryHours + exerciseHours + laboratoryHours;
+        if (totalHours >= 8){
+            throw new IllegalArgumentException("Las horas semanales no deben ser 8 o mayor");
+        }
+
+        if (theoryHours < 0 || exerciseHours < 0 || laboratoryHours < 0){
+            throw new IllegalArgumentException("Las horas no pueden ser negativas");
+        }
+        return String.format("%d-%d-%d", theoryHours, exerciseHours, laboratoryHours);
     }
 
     public void deleteSubject(Long subjectId){

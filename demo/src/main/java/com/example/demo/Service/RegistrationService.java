@@ -37,6 +37,12 @@ public class RegistrationService {
         this.sectionRepository = sectionRepository;
     }
 
+    public List<RegistrationEntity> getRegistrations(){ return registrationRepository.findAll(); }
+
+    public List<RegistrationEntity> getRegistrationsByStudentIdAndTermId(Long studentId, Long termId){
+        return registrationRepository.findByStudentIdAndAcademicTermId(studentId, termId);
+    }
+
     public RegistrationEntity getRegistrationById(Long id){
         return registrationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(
@@ -48,7 +54,7 @@ public class RegistrationService {
         return registrationRepository.findByStudentId(studentId);
     }
 
-    public List<RegistrationEntity> getRegistrationBySectionId(Long sectionId){
+    public List<RegistrationEntity> getRegistrationsBySectionId(Long sectionId){
         return registrationRepository.findBySectionId(sectionId);
     }
 

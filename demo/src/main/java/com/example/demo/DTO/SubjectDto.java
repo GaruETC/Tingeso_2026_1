@@ -5,7 +5,9 @@ import java.util.List;
 public record SubjectDto(
         String code,
         String name,
-        String TEL,
+        int theoryHours,
+        int exerciseHours,
+        int laboratoryHours,
         int SCT,
         int semester,
         List<Long> prerequisiteIds,

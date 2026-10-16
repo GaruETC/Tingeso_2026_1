@@ -34,6 +34,14 @@ public class SectionService {
         this.registrationRepository = registrationRepository;
     }
 
+    public List<SectionEntity> getSections(){
+        return sectionRepository.findAll();
+    }
+
+    public List<SectionEntity> getSectionsByTeacherIdAndAcademicTermId(Long teacherId, Long termId){
+        return sectionRepository.findByTeacherIdAndAcademicTermId(teacherId, teacherId);
+    }
+
     public SectionEntity getSectionById(Long id){
         return sectionRepository.findById(id).
                 orElseThrow(() -> new RuntimeException(
@@ -41,15 +49,15 @@ public class SectionService {
                 ));
     }
 
-    public List<SectionEntity> getSectionByAcademicTermId(Long id){
+    public List<SectionEntity> getSectionsByAcademicTermId(Long id){
         return sectionRepository.findByAcademicTermId(id);
     }
 
-    public List<SectionEntity> getSectionByTeacherId(long id){
+    public List<SectionEntity> getSectionsByTeacherId(Long id){
         return sectionRepository.findByTeacherId(id);
     }
 
-    public SectionEntity getSectionBySubjectId(long id){
+    public SectionEntity getSectionBySubjectId(Long id){
         return sectionRepository.findBySubjectId(id).
                 orElseThrow(() ->  new RuntimeException(
                         "No se encontro una seccion con la asignatura: " + id

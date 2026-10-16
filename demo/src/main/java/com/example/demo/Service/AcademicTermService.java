@@ -1,5 +1,6 @@
 package com.example.demo.Service;
 
+import com.example.demo.DTO.AcademicTermDto;
 import com.example.demo.Entity.*;
 import com.example.demo.Entity.Enum.AcademicHistorialStatus;
 import com.example.demo.Entity.Enum.AcademicTermStatus;
@@ -7,9 +8,7 @@ import com.example.demo.Entity.Enum.StudentStatus;
 import com.example.demo.Repository.*;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class AcademicTermService {
@@ -30,6 +29,12 @@ public class AcademicTermService {
         this.studentService = studentService;
         this.studentRepository = studentRepository;
         this.subjectRepository = subjectRepository;
+    }
+
+    public List<AcademicTermEntity> getAcademicTerms(){ return academicTermRepository.findAll(); }
+
+    public List<AcademicTermEntity> getTermsByStatus(AcademicTermStatus status){
+        return academicTermRepository.findByStatus(status);
     }
 
     public AcademicTermEntity getAcademicTermById(long id){
@@ -54,14 +59,32 @@ public class AcademicTermService {
         return academicTermRepository.findFirstByStatus(AcademicTermStatus.OPEN);
     }
 
+    public AcademicTermEntity createAcademicTerm(AcademicTermDto dto){
+        String period = dto.year() + "-" + dto.semester();
+
+        if (academicTermRepository.existsByPeriod(period)){
+            throw new IllegalArgumentException("Ya existe un periodo academico con periodo: " + period);
+        }
+        if (academicTermRepository.existsByStatus(AcademicTermStatus.OPEN)){
+            throw new IllegalStateException(
+                    "Ya existe un periodo academico con estado ABIERTO"
+            );
+        }
+        AcademicTermEntity term = new AcademicTermEntity();
+        term.setPeriod(period);
+        term.setStatus(AcademicTermStatus.OPEN);
+
+        return academicTermRepository.save(term);
+    }
+
     public void closeAcademicTerm(Long termId){
         AcademicTermEntity term = getAcademicTermById(termId);
         if (!term.getStatus().equals(AcademicTermStatus.OPEN)){
-            throw new IllegalStateException("Solo se puede cerrar un periodo academico que no esta ABIERTO");
+            throw new IllegalStateException("Solo se puede cerrar un periodo academico que este ABIERTO");
         }
 
         List<RegistrationEntity> registrations = registrationRepository.findByAcademicTermId(termId);
-        List<Long> sectionsIdWithoutGrade = new ArrayList<>();
+        Set<Long> sectionsIdWithoutGrade = new HashSet<>();
         for (RegistrationEntity reg : registrations){
             if (reg.getGrade() == null){
                 sectionsIdWithoutGrade.add(reg.getSectionId());
@@ -108,7 +131,7 @@ public class AcademicTermService {
                     studentRepository.save(student);
                 }
             } else{ // if has passed all subjects in his studyplan
-                int totalPlanSubjects = subjectRepository.countByStudyPlanId(reg.getStudentId());
+                int totalPlanSubjects = subjectRepository.countByStudyPlanId(student.getStudyPlanId());
                 int totalApprovedSubjects = academicHistorialRepository
                         .countByStudentIdAndStatus(reg.getStudentId(), AcademicHistorialStatus.PASSED);
                 if (totalApprovedSubjects == totalPlanSubjects){
@@ -117,13 +140,7 @@ public class AcademicTermService {
                 }
             }
         }
-
-        validateDeletedStudent();
         term.setStatus(AcademicTermStatus.CLOSED);
         academicTermRepository.save(term);
-    }
-
-    public void validateDeletedStudent(){
-
     }
 }

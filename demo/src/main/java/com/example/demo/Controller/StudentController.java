@@ -22,7 +22,7 @@ public class StudentController {
 
     // Get all students (status or not)
     @GetMapping
-    public ResponseEntity<List<StudentEntity>> getAllStudents(
+    public ResponseEntity<List<StudentEntity>> getStudents(
             @RequestParam(required = false)StudentStatus status){
         List<StudentEntity> students;
         if (status != null){

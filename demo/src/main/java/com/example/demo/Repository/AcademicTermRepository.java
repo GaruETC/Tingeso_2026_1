@@ -18,4 +18,7 @@ public interface AcademicTermRepository extends JpaRepository<AcademicTermEntity
     //for the active
     Optional<AcademicTermEntity> findFirstByStatus(AcademicTermStatus status);
 
+    boolean existsByPeriod(String period);
+
+    boolean existsByStatus(AcademicTermStatus status);
 }
