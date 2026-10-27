@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class StudentController {
 
     // Get all students (status or not)
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ResponseEntity<List<StudentEntity>> getStudents(
             @RequestParam(required = false)StudentStatus status){
         List<StudentEntity> students;
@@ -34,18 +36,21 @@ public class StudentController {
     }
     // Get a student by his ID
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
     public ResponseEntity<StudentEntity> getStudentById(@PathVariable Long id){
         StudentEntity student = studentService.getStudentById(id);
         return ResponseEntity.ok(student);
     }
     // Create a new student
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StudentEntity> createStudent(@RequestBody StudentDto dto){
         StudentEntity student = studentService.registerStudent(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(student);
     }
     // Update student information
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StudentEntity> updateStudent(
             @PathVariable Long id, @RequestBody StudentDto dto){
         StudentEntity update = studentService.updateStudent(id, dto);
@@ -53,6 +58,7 @@ public class StudentController {
     }
     // Update student status
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> updateStudentStatus(
             @PathVariable Long id, @RequestParam StudentStatus status){
         studentService.updateStudentStatus(id, status);
@@ -60,6 +66,7 @@ public class StudentController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id){
         studentService.deleteStudent(id);
         return ResponseEntity.noContent().build();

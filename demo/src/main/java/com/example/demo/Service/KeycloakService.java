@@ -33,7 +33,8 @@ public class KeycloakService {
         UserRepresentation user = new UserRepresentation();
         user.setUsername(username);
         user.setEmail(email);
-        user.setFirstName(fullName);
+        user.setFirstName(fullName.split(" ")[0]);
+        user.setLastName(fullName.split(" ")[1]);
         user.setEnabled(true);
         user.setEmailVerified(true);
 

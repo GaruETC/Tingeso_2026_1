@@ -1,7 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import TeachersView from './components/TeachersView';
+import TeachersView from './pages/TeachersView.jsx';
+import StudentsView from "./pages/StudentsView.jsx";
+import CareersView from "./pages/CareersView.jsx";
 import { PrivateRoute } from './components/PrivateRoute';
 
 function Home() {
@@ -36,12 +38,27 @@ export default function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/unauthorized" element={<Unauthorized />} />
 
-                {/* Ruta para profesores protegida con rol ADMIN */}
                 <Route
                     path="/teachers"
                     element={
                         <PrivateRoute requiredRole="ADMIN">
                             <TeachersView />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/students"
+                    element={
+                        <PrivateRoute requiredRole="ADMIN">
+                            <StudentsView />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/careers"
+                    element={
+                        <PrivateRoute requiredRole="ADMIN">
+                            <CareersView />
                         </PrivateRoute>
                     }
                 />

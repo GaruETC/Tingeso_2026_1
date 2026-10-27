@@ -32,6 +32,22 @@ export default function Navbar() {
                         </li>
                     )}
 
+                    {isAdmin && (
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/students">
+                                <i className="bi bi-person-badge me-1"></i>Estudiantes
+                            </Link>
+                        </li>
+                    )}
+
+                    {isAdmin && (
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/careers">
+                                <i className="bi bi-journal-bookmark me-1"></i>Carreras
+                            </Link>
+                        </li>
+                    )}
+
                     {(isAdmin || isTeacher) && (
                         <li className="nav-item">
                             <Link className="nav-link" to="/courses">
