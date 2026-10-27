@@ -1,13 +1,11 @@
 package com.example.demo.Service;
 
 import com.example.demo.DTO.SubjectDto;
-import com.example.demo.Entity.StudyPlanEntity;
 import com.example.demo.Entity.SubjectEntity;
 import com.example.demo.Repository.AcademicHistorialRepository;
 import com.example.demo.Repository.SubjectRepository;
 import org.springframework.stereotype.Service;
 
-import javax.security.auth.Subject;
 import java.util.Collections;
 import java.util.List;
 

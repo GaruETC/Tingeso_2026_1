@@ -2,6 +2,7 @@ package com.example.demo.Controller;
 
 import com.example.demo.DTO.RegistrationDto;
 import com.example.demo.DTO.StudentDto;
+import com.example.demo.DTO.SubmitGradesDto;
 import com.example.demo.Entity.RegistrationEntity;
 import com.example.demo.Service.RegistrationService;
 import jakarta.servlet.Registration;
@@ -54,4 +55,9 @@ public class RegistrationController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{id}")
+    public ResponseEntity<Void> submitGrades(@PathVariable Long sectionId, @RequestBody SubmitGradesDto dto){
+        registrationService.submitGrades(sectionId, dto);
+        return ResponseEntity.noContent().build();
+    }
 }
