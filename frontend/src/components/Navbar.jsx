@@ -54,7 +54,9 @@ export default function Navbar() {
                         <>
                   <span className="navbar-text text-light">
                     <i className="bi bi-person-circle me-1"></i>
-                      {keycloak.tokenParsed?.preferred_username}
+                      <span className="navbar-text text-white text-capitalize">
+                        {keycloak.tokenParsed?.preferred_username}
+                      </span>
                       <span className="badge bg-secondary ms-2">
                       {isAdmin ? 'ADMIN' : isTeacher ? 'TEACHER' : isStudent ? 'STUDENT' : 'USER'}
                     </span>

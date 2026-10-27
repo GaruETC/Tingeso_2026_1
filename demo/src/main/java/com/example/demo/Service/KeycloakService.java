@@ -66,7 +66,20 @@ public class KeycloakService {
         try {
             keycloak.realm(sisgrRealm).users().get(keycloakUserId).remove();
         } catch (Exception e) {
-            // Alert Log
+            throw new RuntimeException("Error al eliminar usuario en keycloak");
+        }
+    }
+
+    public void deleteUserByUsername(String username) {
+        try {
+            RealmResource realmResource = keycloak.realm(sisgrRealm);
+            List<UserRepresentation> users = realmResource.users().searchByUsername(username, true);
+            if (!users.isEmpty()) {
+                String userId = users.getFirst().getId();
+                realmResource.users().get(userId).remove();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error al eliminar usuario en keycloak por su username: " + username);
         }
     }
 }

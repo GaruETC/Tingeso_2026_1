@@ -6,7 +6,6 @@ export default function TeachersView() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Estados correspondientes a tu entidad Java
     const [formData, setFormData] = useState({
         run: '',
         fullName: '',
@@ -48,7 +47,6 @@ export default function TeachersView() {
 
         apiClient.post('/teachers', formData)
             .then(() => {
-                // Limpiar el formulario
                 setFormData({ run: '', fullName: '', email: '', title: '', degree: '' });
                 fetchTeachers();
             })
@@ -56,6 +54,19 @@ export default function TeachersView() {
                 alert(err.response?.data?.message || 'Error al crear docente en la base de datos');
             })
             .finally(() => setSubmitting(false));
+    };
+
+    const handleDelete = (id, fullName) => {
+        const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar al docente "${fullName}"?`);
+        if (!confirmDelete) return;
+
+        apiClient.delete(`/teachers/${id}`)
+            .then(() => {
+                setTeachers((prev) => prev.filter((t) => t.id !== id));
+            })
+            .catch((err) => {
+                alert(err.response?.data?.message || 'Error al eliminar el docente.');
+            });
     };
 
     return (
@@ -73,7 +84,6 @@ export default function TeachersView() {
                 </div>
             )}
 
-            {/* Formulario completo con todos los campos obligatorios */}
             <div className="card shadow-sm mb-4">
                 <div className="card-header bg-light">
                     <strong>Registrar Nuevo Docente</strong>
@@ -154,7 +164,6 @@ export default function TeachersView() {
                 </div>
             </div>
 
-            {/* Tabla con los nombres de atributos exactos del Entity */}
             <div className="card shadow-sm">
                 <div className="card-body p-0">
                     <div className="table-responsive">
@@ -167,18 +176,19 @@ export default function TeachersView() {
                                 <th>Correo</th>
                                 <th>Título</th>
                                 <th>Grado</th>
+                                <th className="text-center">Acciones</th>
                             </tr>
                             </thead>
                             <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-4">
+                                    <td colSpan="7" className="text-center py-4">
                                         Cargando profesores...
                                     </td>
                                 </tr>
                             ) : teachers.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-4 text-muted">
+                                    <td colSpan="7" className="text-center py-4 text-muted">
                                         No hay registros disponibles.
                                     </td>
                                 </tr>
@@ -191,6 +201,14 @@ export default function TeachersView() {
                                         <td>{teacher.email}</td>
                                         <td>{teacher.title}</td>
                                         <td>{teacher.degree}</td>
+                                        <td className="text-center">
+                                            <button
+                                                className="btn btn-outline-danger btn-sm"
+                                                onClick={() => handleDelete(teacher.id, teacher.fullName)}
+                                            >
+                                                <i className="bi bi-trash-fill me-1"></i>Eliminar
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))
                             )}

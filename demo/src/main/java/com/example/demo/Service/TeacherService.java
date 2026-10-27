@@ -7,6 +7,7 @@ import com.example.demo.Entity.TeacherEntity;
 import com.example.demo.Repository.AcademicTermRepository;
 import com.example.demo.Repository.SectionRepository;
 import com.example.demo.Repository.TeacherRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -99,9 +100,9 @@ public class TeacherService {
             keycloakService.deleteUser(keycloakUserId);
             throw new RuntimeException("Error al registrar docente en la base de datos");
         }
-
     }
 
+    @Transactional
     public void deleteTeacher(Long id){
         TeacherEntity teacher = getTeacherById(id);
         if (sectionRepository.existsByTeacherId(id)){
@@ -109,6 +110,8 @@ public class TeacherService {
                     "No se puede eliminar el profesor " + teacher.getId() + " ya que tiene secciones asociadas"
             );
         }
+        keycloakService.deleteUserByUsername(teacher.getFullName().split(" ")[0]);
+
         teacherRepository.delete(teacher);
     }
 
