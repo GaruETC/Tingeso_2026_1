@@ -17,11 +17,13 @@ public class TeacherService {
     private final TeacherRepository teacherRepository;
     private final SectionRepository sectionRepository;
     private final AcademicTermService academicTermService;
+    private final KeycloakService keycloakService;
 
-    public TeacherService(TeacherRepository teacherRepository, SectionRepository sectionRepository, AcademicTermService academicTermService) {
+    public TeacherService(TeacherRepository teacherRepository, SectionRepository sectionRepository, AcademicTermService academicTermService, KeycloakService keycloakService) {
         this.teacherRepository = teacherRepository;
         this.sectionRepository = sectionRepository;
         this.academicTermService = academicTermService;
+        this.keycloakService = keycloakService;
     }
 
     public List<TeacherEntity> getTeachers(){
@@ -74,15 +76,30 @@ public class TeacherService {
             );
         }
 
-        TeacherEntity teacher = new TeacherEntity();
-        teacher.setRun(cleanRun);
-        teacher.setEmail(cleanEmail);
-        teacher.setFullName(teacherDto.fullName());
-        teacher.setTitle(teacherDto.title());
-        teacher.setDegree(teacherDto.degree());
-        teacher.setStatus(TeacherStatus.ACTIVE);
+        String tempPassword = "docente123";
+        String keycloakUserId = keycloakService.createUserWithRole(
+                teacherDto.fullName().split(" ")[0],
+                cleanEmail,
+                teacherDto.fullName(),
+                tempPassword,
+                "TEACHER"
+        );
 
-        return teacherRepository.save(teacher);
+        try {
+            TeacherEntity teacher = new TeacherEntity();
+            teacher.setRun(cleanRun);
+            teacher.setEmail(cleanEmail);
+            teacher.setFullName(teacherDto.fullName());
+            teacher.setTitle(teacherDto.title());
+            teacher.setDegree(teacherDto.degree());
+            teacher.setStatus(TeacherStatus.ACTIVE);
+
+            return teacherRepository.save(teacher);
+        } catch (Exception e) {
+            keycloakService.deleteUser(keycloakUserId);
+            throw new RuntimeException("Error al registrar docente en la base de datos");
+        }
+
     }
 
     public void deleteTeacher(Long id){

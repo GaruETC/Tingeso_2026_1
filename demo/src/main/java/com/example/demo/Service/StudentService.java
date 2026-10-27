@@ -21,17 +21,19 @@ public class StudentService {
     private final AcademicHistorialRepository academicHistorialRepository;
     private final StudyPlanRepository studyPlanRepository;
     private final CareerRepository careerRepository;
+    private final KeycloakService keycloakService;
 
     public StudentService(
             StudentRepository studentRepository,
             RegistrationRepository registrationRepository,
             AcademicHistorialRepository academicHistorialRepository,
-            StudyPlanRepository studyPlanRepository, CareerRepository careerRepository) {
+            StudyPlanRepository studyPlanRepository, CareerRepository careerRepository, KeycloakService keycloakService) {
         this.studentRepository = studentRepository;
         this.registrationRepository = registrationRepository;
         this.academicHistorialRepository = academicHistorialRepository;
         this.studyPlanRepository = studyPlanRepository;
         this.careerRepository = careerRepository;
+        this.keycloakService = keycloakService;
     }
 
     public List<StudentEntity> getStudents(){
@@ -139,16 +141,30 @@ public class StudentService {
                         "No existe un plan de estudio vigente para la carrera con id: " + studentDto.careerId()
                 ));
 
-        StudentEntity student = new StudentEntity();
-        student.setRun(cleanRun);
-        student.setEmail(cleanEmail);
-        student.setFullName(studentDto.fullName());
-        student.setCareerId(studentDto.careerId());
-        student.setStudyPlanId(studyPlan.getId());
-        student.setMatriculation(true);
-        student.setStatus(StudentStatus.REGULAR);
+        String tempPassword = "estudiante123";
+        String keycloakUserId = keycloakService.createUserWithRole(
+                studentDto.fullName().split(" ")[0],
+                cleanEmail,
+                studentDto.fullName(),
+                tempPassword,
+                "STUDENT"
+        );
 
-        return studentRepository.save(student);
+        try {
+            StudentEntity student = new StudentEntity();
+            student.setRun(cleanRun);
+            student.setEmail(cleanEmail);
+            student.setFullName(studentDto.fullName());
+            student.setCareerId(studentDto.careerId());
+            student.setStudyPlanId(studyPlan.getId());
+            student.setMatriculation(true);
+            student.setStatus(StudentStatus.REGULAR);
+
+            return studentRepository.save(student);
+        } catch (Exception e) {
+            keycloakService.deleteUser(keycloakUserId);
+            throw new RuntimeException("Error al registrar estudiante en la base de datos");
+        }
     }
 
     public void updateStudentStatus(Long id, StudentStatus status){
