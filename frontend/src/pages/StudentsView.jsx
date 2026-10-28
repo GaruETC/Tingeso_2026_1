@@ -37,6 +37,11 @@ export default function StudentsView() {
             .catch(() => console.warn('No se pudo cargar la lista de carreras'));
     }, []);
 
+    const getCareerName = (careerId) => {
+        const career = careers.find(c => c.id === careerId);
+        return career ? career.name : 'Sin asignar';
+    };
+
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -169,7 +174,7 @@ export default function StudentsView() {
                                 <th>RUN</th>
                                 <th>Nombre Completo</th>
                                 <th>Correo</th>
-                                <th>CarreraId</th>
+                                <th>Carrera</th>
                                 <th>Estado</th>
                                 <th className="text-center">Acciones</th>
                             </tr>
@@ -194,7 +199,7 @@ export default function StudentsView() {
                                         <td>{student.run}</td>
                                         <td>{student.fullName}</td>
                                         <td>{student.email}</td>
-                                        <td>{student.careerId}</td>
+                                        <td>{getCareerName(student.careerId)}</td>
                                         <td>{student.status}</td>
                                         <td className="text-center">
                                             <button

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class CareerController {
     private final CareerService careerService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER')")
     public ResponseEntity<List<CareerEntity>> getCareers(@RequestParam(required = false) CareerStatus status){
         List<CareerEntity> careers;
         if (status != null){
@@ -32,26 +34,28 @@ public class CareerController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER')")
     public ResponseEntity<CareerEntity> getCareerById(@PathVariable Long id){
         return ResponseEntity.ok(careerService.getCareerById(id));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CareerEntity> createCareer(@RequestBody CareerDto dto){
         CareerEntity created = careerService.createCareer(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CareerEntity> updateCareer(
             @PathVariable Long id, @RequestBody CareerDto dto){
         CareerEntity updated = careerService.updateCareer(id, dto);
         return ResponseEntity.ok(updated);
     }
 
-
-
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteCareer(@PathVariable Long id){
         careerService.deleteCareer(id);
         return ResponseEntity.noContent().build();

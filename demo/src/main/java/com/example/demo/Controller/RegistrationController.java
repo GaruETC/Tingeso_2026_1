@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class RegistrationController {
     private final RegistrationService registrationService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER')")
     public ResponseEntity<List<RegistrationEntity>> getRegistrations(
             @RequestParam(required = false) Long studentId,
             @RequestParam(required = false) Long sectionId,
@@ -39,23 +41,27 @@ public class RegistrationController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER')")
     public ResponseEntity<RegistrationEntity> getRegistrationById(@PathVariable Long id){
         return ResponseEntity.ok(registrationService.getRegistrationById(id));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RegistrationEntity> createRegistration(@RequestBody RegistrationDto dto){
         RegistrationEntity created = registrationService.createRegistration(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteRegistration(@PathVariable Long id){
         registrationService.cancelRegistration(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<Void> submitGrades(@PathVariable Long sectionId, @RequestBody SubmitGradesDto dto){
         registrationService.submitGrades(sectionId, dto);
         return ResponseEntity.noContent().build();

@@ -16,6 +16,9 @@ public class StudyPlanEntity {
     @Column(nullable = false)
     private Long careerId;
 
+    @Column(nullable = false)
+    private String code;
+
     @Enumerated(EnumType.STRING)
-    private StudyPlanStatus status = StudyPlanStatus.VIGENTE;
+    private StudyPlanStatus status;
 }

@@ -5,6 +5,7 @@ import TeachersView from './pages/TeachersView';
 import StudentsView from "./pages/StudentsView";
 import CareersView from "./pages/CareersView";
 import { PrivateRoute } from './components/PrivateRoute';
+import SubjectsView from "./pages/SubjectsView.jsx";
 
 function Home() {
     return (
@@ -59,6 +60,14 @@ export default function App() {
                     element={
                         <PrivateRoute requiredRole="ADMIN">
                             <CareersView />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/subjects"
+                    element={
+                        <PrivateRoute requiredRole="ADMIN">
+                            <SubjectsView />
                         </PrivateRoute>
                     }
                 />

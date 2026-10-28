@@ -64,6 +64,11 @@ public class TeacherService {
         // Normalize RUT and email
         String cleanRun = teacherDto.run().toUpperCase();
         String cleanEmail = teacherDto.email().toLowerCase();
+        String cleanFullName = teacherDto.fullName().trim().replaceAll("\\s+", " ");
+
+        if (cleanFullName.isBlank()) {
+            throw new IllegalArgumentException("El nombre completo del docente es obligatorio");
+        }
 
         // Check that there is no existing teacher with the same RUT or email
         if (teacherRepository.existsByRun(cleanRun)){
@@ -79,9 +84,9 @@ public class TeacherService {
 
         String tempPassword = "docente123";
         String keycloakUserId = keycloakService.createUserWithRole(
-                teacherDto.fullName().split(" ")[0],
+                cleanFullName.split(" ")[0],
                 cleanEmail,
-                teacherDto.fullName(),
+                cleanFullName,
                 tempPassword,
                 "TEACHER"
         );
@@ -90,7 +95,7 @@ public class TeacherService {
             TeacherEntity teacher = new TeacherEntity();
             teacher.setRun(cleanRun);
             teacher.setEmail(cleanEmail);
-            teacher.setFullName(teacherDto.fullName());
+            teacher.setFullName(cleanFullName);
             teacher.setTitle(teacherDto.title());
             teacher.setDegree(teacherDto.degree());
             teacher.setStatus(TeacherStatus.ACTIVO);

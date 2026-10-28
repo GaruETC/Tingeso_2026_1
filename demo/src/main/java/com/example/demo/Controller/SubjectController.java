@@ -6,6 +6,7 @@ import com.example.demo.Service.SubjectService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.Subject;
@@ -20,6 +21,7 @@ public class SubjectController {
     private final SubjectService subjectService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
     public ResponseEntity<List<SubjectEntity>> getSubjects(
             @RequestParam(required = false) Long studyPlanId) {
         List<SubjectEntity> subjects;
@@ -32,17 +34,20 @@ public class SubjectController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
     public ResponseEntity<SubjectEntity> getSubjectById(@PathVariable Long id) {
         return ResponseEntity.ok(subjectService.getSubjectById(id));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SubjectEntity> createSubject(@RequestBody SubjectDto subjectDto) {
         SubjectEntity created = subjectService.registerSubject(subjectDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SubjectEntity> updateSubject(
             @PathVariable Long id,
             @RequestBody SubjectDto subjectDto) {
@@ -51,12 +56,14 @@ public class SubjectController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteSubject(@PathVariable Long id) {
         subjectService.deleteSubject(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}/prerequisites")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<List<SubjectEntity>> getPrerequisites(@PathVariable Long id) {
         return ResponseEntity.ok(subjectService.getPrerequisites(id));
     }

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class AcademicTermController {
     private final AcademicTermService academicTermService;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<AcademicTermEntity>> getAcademicTerms(
             @RequestParam(required = false) AcademicTermStatus status){
         List<AcademicTermEntity> terms;
@@ -33,6 +35,7 @@ public class AcademicTermController {
     }
 
     @GetMapping("/current")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER')")
     public ResponseEntity<AcademicTermEntity> getCurrentAcademicTerm(){
         return academicTermService.getActiveTerm()
                 .map(ResponseEntity::ok)
@@ -40,11 +43,13 @@ public class AcademicTermController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER')")
     public ResponseEntity<AcademicTermEntity> getAcademicTermById(@PathVariable Long id){
         return ResponseEntity.ok(academicTermService.getAcademicTermById(id));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AcademicTermEntity> createAcademicTerm(
             @RequestBody AcademicTermDto dto){
         AcademicTermEntity created = academicTermService.createAcademicTerm(dto);
@@ -52,6 +57,7 @@ public class AcademicTermController {
     }
 
     @PatchMapping("/{id}/close")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> closeAcademicTerm(@PathVariable Long id){
         academicTermService.closeAcademicTerm(id);
         return ResponseEntity.noContent().build();

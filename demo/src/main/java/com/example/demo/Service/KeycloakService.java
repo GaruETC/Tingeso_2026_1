@@ -29,12 +29,13 @@ public class KeycloakService {
     public String createUserWithRole(String username, String email, String fullName, String defaultPassword, String realmRole) {
         RealmResource realmResource = keycloak.realm(sisgrRealm);
         UsersResource usersResource = realmResource.users();
+        String[] nameParts = fullName.trim().split("\\s+", 2);
 
         UserRepresentation user = new UserRepresentation();
         user.setUsername(username);
         user.setEmail(email);
-        user.setFirstName(fullName.split(" ")[0]);
-        user.setLastName(fullName.split(" ")[1]);
+        user.setFirstName(nameParts[0]);
+        user.setLastName(nameParts.length > 1 ? nameParts[1] : "");
         user.setEnabled(true);
         user.setEmailVerified(true);
 

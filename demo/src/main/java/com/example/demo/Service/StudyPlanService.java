@@ -1,5 +1,6 @@
 package com.example.demo.Service;
 
+import com.example.demo.DTO.StudyPlanDto;
 import com.example.demo.Entity.Enum.StudyPlanStatus;
 import com.example.demo.Entity.StudyPlanEntity;
 import com.example.demo.Repository.StudentRepository;
@@ -34,15 +35,16 @@ public class StudyPlanService {
         return studyPlanRepository.findByCareerId(careerId);
     }
 
-    public StudyPlanEntity createStudyPlan(Long careerId){
-        studyPlanRepository.findByCareerIdAndStatus(careerId, StudyPlanStatus.VIGENTE)
+    public StudyPlanEntity createStudyPlan(StudyPlanDto Dto){
+        studyPlanRepository.findByCareerIdAndStatus(Dto.careerId(), StudyPlanStatus.VIGENTE)
                         .ifPresent(previousPlan -> {
                             previousPlan.setStatus(StudyPlanStatus.NO_VIGENTE);
                             studyPlanRepository.save(previousPlan);
                         });
 
         StudyPlanEntity studyPlan = new StudyPlanEntity();
-        studyPlan.setCareerId(careerId);
+        studyPlan.setCareerId(Dto.careerId());
+        studyPlan.setCode(Dto.code());
         studyPlan.setStatus(StudyPlanStatus.VIGENTE);
         return studyPlanRepository.save(studyPlan);
     }

@@ -48,10 +48,10 @@ export default function Navbar() {
                         </li>
                     )}
 
-                    {(isAdmin || isTeacher) && (
+                    {isAdmin && (
                         <li className="nav-item">
-                            <Link className="nav-link" to="/courses">
-                                <i className="bi bi-journal-bookmark me-1"></i>Cursos
+                            <Link className="nav-link" to="/subjects">
+                                <i className="bi bi-book-half me-1"></i>Asignaturas
                             </Link>
                         </li>
                     )}

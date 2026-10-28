@@ -6,6 +6,7 @@ import com.example.demo.Service.AcademicHistorialService;
 import com.example.demo.Service.AcademicTermService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class AcademicHistorialController {
     private final AcademicHistorialService academicHistorialService;
 
     @GetMapping("/student/{studentId}/passed-records")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
     public ResponseEntity<List<AcademicHistorialEntity>> getPassedRecordsByStudent(@PathVariable Long studentId){
         List<AcademicHistorialEntity> passedSubjects = academicHistorialService.getPassedSubjectsByStudent(studentId);
         return ResponseEntity.ok(passedSubjects);

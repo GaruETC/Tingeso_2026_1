@@ -50,7 +50,7 @@ export default function CareersView() {
 
         apiClient.post('/careers', formData)
             .then(() => {
-                setFormData({ name: '', code: '', description: '',status: 'ACTIVO' });
+                setFormData({ name: '', code: '', description: '', status: 'ACTIVO' });
                 fetchCareers();
             })
             .catch((err) => {
@@ -75,19 +75,19 @@ export default function CareersView() {
 
     const handleAddPlan = (e) => {
         e.preventDefault();
-        if (!selectedCareer) return;
+        if (!selectedCareer || !newPlanCode.trim()) return;
 
         setSubmittingPlan(true);
         const planPayload = {
             careerId: selectedCareer.id,
-            code: newPlanCode,
-            status: 'VIGENTE'
+            code: newPlanCode.trim()
         };
 
         apiClient.post('/study-plans', planPayload)
             .then(() => {
-                alert(`Plan de estudio creado con éxito para ${selectedCareer.name}`);
+                alert(`Plan de estudio "${newPlanCode}" creado con éxito para ${selectedCareer.name}`);
                 setNewPlanCode('');
+                setSelectedCareer(null); // Repliega el panel tras la creación
                 fetchCareers();
             })
             .catch((err) => {
@@ -111,13 +111,14 @@ export default function CareersView() {
                 </div>
             )}
 
+            {/* Formulario de Carrera */}
             <div className="card shadow-sm mb-4">
                 <div className="card-header bg-light">
                     <strong>Registrar Nueva Carrera</strong>
                 </div>
                 <div className="card-body">
                     <form onSubmit={handleCreateCareer} className="row g-3">
-                        <div className="col-md-5">
+                        <div className="col-md-4">
                             <label className="form-label">Nombre de la Carrera</label>
                             <input
                                 type="text"
@@ -130,21 +131,21 @@ export default function CareersView() {
                             />
                         </div>
 
-                        <div className="col-md-4">
+                        <div className="col-md-2">
                             <label className="form-label">Código</label>
                             <input
                                 type="text"
                                 name="code"
                                 className="form-control"
-                                placeholder="INF-2026"
+                                placeholder="10450"
                                 value={formData.code}
                                 onChange={handleChange}
                                 required
                             />
                         </div>
 
-                        <div className="col-md-3">
-                            <label className="form-label">Descripcion</label>
+                        <div className="col-md-4">
+                            <label className="form-label">Descripción</label>
                             <input
                                 type="text"
                                 name="description"
@@ -156,7 +157,7 @@ export default function CareersView() {
                             />
                         </div>
 
-                        <div className="col-md-3">
+                        <div className="col-md-2">
                             <label className="form-label">Estado</label>
                             <select
                                 name="status"
@@ -178,13 +179,15 @@ export default function CareersView() {
                 </div>
             </div>
 
+            {/* Panel de Asignación de Plan Vigente */}
             {selectedCareer && (
                 <div className="card shadow-sm border-primary mb-4">
                     <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <span>
-              <strong>Agregar Plan Vigente a:</strong> {selectedCareer.name} (ID: {selectedCareer.id})
-            </span>
+                        <span>
+                            <strong>Asignar Nuevo Plan Vigente a:</strong> {selectedCareer.name} (ID: {selectedCareer.id})
+                        </span>
                         <button
+                            type="button"
                             className="btn btn-sm btn-outline-light"
                             onClick={() => setSelectedCareer(null)}
                         >
@@ -198,7 +201,7 @@ export default function CareersView() {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    placeholder="Plan 2026-1"
+                                    placeholder="Ej: Plan 2026-1"
                                     value={newPlanCode}
                                     onChange={(e) => setNewPlanCode(e.target.value)}
                                     required
@@ -206,14 +209,18 @@ export default function CareersView() {
                             </div>
                             <div className="col-md-6">
                                 <button type="submit" className="btn btn-success" disabled={submittingPlan}>
-                                    {submittingPlan ? 'Guardando...' : 'Asignar Plan como VIGENTE'}
+                                    {submittingPlan ? 'Guardando...' : 'Asignar como Plan VIGENTE'}
                                 </button>
                             </div>
                         </form>
+                        <small className="text-muted d-block mt-2">
+                            * Al asignar este plan, cualquier plan anterior de esta carrera cambiará automáticamente a NO_VIGENTE.
+                        </small>
                     </div>
                 </div>
             )}
 
+            {/* Tabla de Carreras */}
             <div className="card shadow-sm">
                 <div className="card-body p-0">
                     <div className="table-responsive">
@@ -223,6 +230,7 @@ export default function CareersView() {
                                 <th>ID</th>
                                 <th>Código</th>
                                 <th>Nombre de Carrera</th>
+                                <th>Descripción</th>
                                 <th>Estado</th>
                                 <th className="text-center">Acciones</th>
                             </tr>
@@ -230,13 +238,13 @@ export default function CareersView() {
                             <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan="5" className="text-center py-4">
+                                    <td colSpan="6" className="text-center py-4">
                                         Cargando carreras...
                                     </td>
                                 </tr>
                             ) : careers.length === 0 ? (
                                 <tr>
-                                    <td colSpan="5" className="text-center py-4 text-muted">
+                                    <td colSpan="6" className="text-center py-4 text-muted">
                                         No hay registros disponibles.
                                     </td>
                                 </tr>
@@ -246,10 +254,13 @@ export default function CareersView() {
                                         <td><strong>{career.id}</strong></td>
                                         <td>{career.code || '-'}</td>
                                         <td>{career.name}</td>
+                                        <td className="text-truncate" style={{ maxWidth: '250px' }} title={career.description}>
+                                            {career.description || '-'}
+                                        </td>
                                         <td>
-                        <span className={`badge ${career.status === 'ACTIVO' ? 'bg-success' : 'bg-secondary'}`}>
-                          {career.status}
-                        </span>
+                                                <span className={`badge ${career.status === 'ACTIVO' ? 'bg-success' : 'bg-secondary'}`}>
+                                                    {career.status}
+                                                </span>
                                         </td>
                                         <td className="text-center">
                                             <button

@@ -4,6 +4,7 @@ import com.example.demo.DTO.StudentDto;
 import com.example.demo.Entity.Enum.StudentStatus;
 import com.example.demo.Entity.StudentEntity;
 import com.example.demo.Service.StudentService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/students")
 @CrossOrigin(origins = "*")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class StudentController {
 
     private final StudentService studentService;
