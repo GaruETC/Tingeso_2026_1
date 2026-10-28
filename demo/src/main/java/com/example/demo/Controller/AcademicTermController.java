@@ -22,15 +22,9 @@ public class AcademicTermController {
     private final AcademicTermService academicTermService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<AcademicTermEntity>> getAcademicTerms(
-            @RequestParam(required = false) AcademicTermStatus status){
-        List<AcademicTermEntity> terms;
-        if (status != null){
-            terms = academicTermService.getTermsByStatus(status);
-        } else{
-            terms = academicTermService.getAcademicTerms();
-        }
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
+    public ResponseEntity<List<AcademicTermEntity>> getAcademicTerms() {
+        List<AcademicTermEntity> terms = academicTermService.getAcademicTerms();
         return ResponseEntity.ok(terms);
     }
 

@@ -56,9 +56,25 @@ export default function Navbar() {
                         </li>
                     )}
 
+                    {isAdmin && (
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/academic-terms">
+                                <i className="bi bi-calendar-range me-1"></i>Periodos Academicos
+                            </Link>
+                        </li>
+                    )}
+
+                    {isAdmin && (
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/sections">
+                                <i className="bi bi-calendar-range me-1"></i>Secciones
+                            </Link>
+                        </li>
+                    )}
+
                     {isStudent && (
                         <li className="nav-item">
-                            <Link className="nav-link" to="/enrollment">
+                            <Link className="nav-link" to="/registrations">
                                 <i className="bi bi-card-checklist me-1"></i>Inscripción
                             </Link>
                         </li>

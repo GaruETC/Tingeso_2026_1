@@ -47,20 +47,20 @@ public class RegistrationController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<RegistrationEntity> createRegistration(@RequestBody RegistrationDto dto){
         RegistrationEntity created = registrationService.createRegistration(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
     public ResponseEntity<Void> deleteRegistration(@PathVariable Long id){
         registrationService.cancelRegistration(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/section/{sectionId}/grades")
     @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<Void> submitGrades(@PathVariable Long sectionId, @RequestBody SubmitGradesDto dto){
         registrationService.submitGrades(sectionId, dto);

@@ -10,6 +10,8 @@ import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -71,5 +73,16 @@ public class StudentController {
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id){
         studentService.deleteStudent(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<StudentEntity> getMyProfile(Authentication authentication) {
+        JwtAuthenticationToken jwtAuthToken = (JwtAuthenticationToken) authentication;
+
+        String email = (String) jwtAuthToken.getTokenAttributes().get("email");
+        StudentEntity student = studentService.getStudentByEmail(email);
+
+        return ResponseEntity.ok(student);
     }
 }

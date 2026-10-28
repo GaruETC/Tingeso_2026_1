@@ -51,6 +51,13 @@ public class StudentService {
                 ));
     }
 
+    public StudentEntity getStudentByEmail(String email){
+        return studentRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException(
+                        "No se encontró el estudiante con email: " + email
+                ));
+    }
+
     public StudentEntity getStudentByRun(String run){
         return studentRepository.findByRun(run)
                 .orElseThrow(() -> new RuntimeException(

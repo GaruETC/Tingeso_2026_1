@@ -12,7 +12,6 @@ apiClient.interceptors.request.use(
     async (config) => {
         if (keycloak.authenticated) {
             try {
-                // Refresca el token si va a expirar en los próximos 30 segundos
                 await keycloak.updateToken(30);
                 config.headers.Authorization = `Bearer ${keycloak.token}`;
             } catch (error) {

@@ -4,8 +4,11 @@ import Navbar from './components/Navbar';
 import TeachersView from './pages/TeachersView';
 import StudentsView from "./pages/StudentsView";
 import CareersView from "./pages/CareersView";
+import SectionsView from "./pages/SectionsView.jsx";
 import { PrivateRoute } from './components/PrivateRoute';
 import SubjectsView from "./pages/SubjectsView.jsx";
+import AcademicTermsView from "./pages/AcademicTermsView.jsx";
+import RegistrationsView from "./pages/RegistrationsView.jsx";
 
 function Home() {
     return (
@@ -68,6 +71,31 @@ export default function App() {
                     element={
                         <PrivateRoute requiredRole="ADMIN">
                             <SubjectsView />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/academic-terms"
+                    element={
+                        <PrivateRoute requiredRole="ADMIN">
+                            <AcademicTermsView />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/sections"
+                    element={
+                        <PrivateRoute requiredRole="ADMIN">
+                            <SectionsView />
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path="/registrations"
+                    element={
+                        <PrivateRoute requiredRole="STUDENT">
+                            <RegistrationsView />
                         </PrivateRoute>
                     }
                 />

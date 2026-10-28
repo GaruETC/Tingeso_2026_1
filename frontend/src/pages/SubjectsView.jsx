@@ -17,15 +17,15 @@ export default function SubjectsView() {
         semester: 1,
         theoryHours: 0,
         exerciseHours: 0,
-        labHours: 0,
-        sct: 1,
+        laboratoryHours: 0,
+        SCT: 1,
         prerequisiteIds: []
     });
 
     useEffect(() => {
         Promise.all([
             apiClient.get('/careers'),
-            apiClient.get('/study-plans') // Asumiendo que tienes este endpoint
+            apiClient.get('/study-plans')
         ]).then(([careersRes, plansRes]) => {
             setCareers(careersRes.data);
             setStudyPlans(plansRes.data);
@@ -51,7 +51,7 @@ export default function SubjectsView() {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: ['semester', 'theoryHours', 'exerciseHours', 'labHours', 'sct'].includes(name)
+            [name]: ['semester', 'theoryHours', 'exerciseHours', 'laboratoryHours', 'SCT'].includes(name)
                 ? Number(value)
                 : value
         }));
@@ -75,15 +75,13 @@ export default function SubjectsView() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Regla 1: TEL suma < 8
-        const totalTel = formData.theoryHours + formData.exerciseHours + formData.labHours;
+        const totalTel = formData.theoryHours + formData.exerciseHours + formData.laboratoryHours;
         if (totalTel >= 8) {
             alert("La suma total de horas TEL (Teoría, Ejercicios, Laboratorio) debe ser inferior a 8.");
             return;
         }
 
-        // Regla 2: SCT entre 1 y 7
-        if (formData.sct <= 0 || formData.sct > 7) {
+        if (formData.SCT <= 0 || formData.SCT > 7) {
             alert("Los créditos (SCT) deben ser mayores a 0 y menores o iguales a 7.");
             return;
         }
@@ -92,19 +90,17 @@ export default function SubjectsView() {
         const payload = {
             ...formData,
             studyPlanId: Number(selectedPlanId),
-            tel: `${formData.theoryHours}-${formData.exerciseHours}-${formData.labHours}` // Formato requerido ej: 2-2-2
+            tel: `${formData.theoryHours}-${formData.exerciseHours}-${formData.laboratoryHours}`
         };
 
         apiClient.post('/subjects', payload)
             .then(() => {
                 alert('Asignatura creada con éxito');
-                // Limpiar formulario manteniendo el semestre
                 setFormData({
                     code: '', name: '', semester: formData.semester,
-                    theoryHours: 0, exerciseHours: 0, labHours: 0,
-                    sct: 1, prerequisiteIds: []
+                    theoryHours: 0, exerciseHours: 0, laboratoryHours: 0,
+                    SCT: 1, prerequisiteIds: []
                 });
-                // Recargar lista
                 return apiClient.get(`/subjects?studyPlanId=${selectedPlanId}`);
             })
             .then(res => setSubjects(res.data))
@@ -178,14 +174,14 @@ export default function SubjectsView() {
                                         <span className="input-group-text">-</span>
                                         <input type="number" name="exerciseHours" className="form-control" min="0" value={formData.exerciseHours} onChange={handleChange} title="Ejercicios" />
                                         <span className="input-group-text">-</span>
-                                        <input type="number" name="labHours" className="form-control" min="0" value={formData.labHours} onChange={handleChange} title="Laboratorio" />
+                                        <input type="number" name="laboratoryHours" className="form-control" min="0" value={formData.laboratoryHours} onChange={handleChange} title="Laboratorio" />
                                     </div>
                                     <small className="text-muted">Suma total debe ser &lt; 8</small>
                                 </div>
 
                                 <div className="col-md-2">
                                     <label className="form-label">SCT (Créditos)</label>
-                                    <input type="number" name="sct" className="form-control" min="1" max="7" value={formData.sct} onChange={handleChange} required />
+                                    <input type="number" name="SCT" className="form-control" min="1" max="7" value={formData.SCT} onChange={handleChange} required />
                                 </div>
 
                                 <div className="col-md-6">
@@ -235,8 +231,8 @@ export default function SubjectsView() {
                                             <td><span className="badge bg-secondary">{subject.semester}</span></td>
                                             <td><strong>{subject.code}</strong></td>
                                             <td>{subject.name}</td>
-                                            <td>{subject.tel}</td>
-                                            <td>{subject.sct}</td>
+                                            <td>{subject.TEL}</td>
+                                            <td>{subject.SCT}</td>
                                             <td className="text-center">
                                                 <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(subject.id, subject.name)}>
                                                     <i className="bi bi-trash-fill"></i>

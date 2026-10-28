@@ -6,7 +6,6 @@ import com.example.demo.Entity.Enum.TeacherStatus;
 import com.example.demo.Entity.TeacherEntity;
 import com.example.demo.Service.TeacherService;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

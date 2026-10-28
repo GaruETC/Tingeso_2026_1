@@ -151,7 +151,7 @@ public class SubjectService {
 
     public void deleteSubject(Long subjectId){
         SubjectEntity subject = getSubjectById(subjectId);
-        if (!academicHistorialRepository.existsBySubjectId(subjectId)){
+        if (academicHistorialRepository.existsBySubjectId(subjectId)){
             throw new IllegalArgumentException(
                     "Esta asignatura forma parte de un historial academico"
             );

@@ -111,6 +111,8 @@ public class RegistrationService {
         validateNoLowerSemester(student, subject, activeTerm.getId());
         validateStudentSchedule(student.getId(), activeTerm.getId(), section.getSchedule());
 
+        section.setMaxCapacity(section.getMaxCapacity() - 1);
+
         RegistrationEntity registration = new RegistrationEntity();
         registration.setStudentId(student.getId());
         registration.setSectionId(section.getId());
@@ -229,6 +231,9 @@ public class RegistrationService {
                 .orElseThrow(() -> new IllegalStateException(
                         "No hay periodo academico activo en este momento"
                 ));
+
+        SectionEntity section = sectionService.getSectionById(registration.getSectionId());
+        section.setMaxCapacity(section.getMaxCapacity() + 1);
 
         registrationRepository.delete(registration);
     }

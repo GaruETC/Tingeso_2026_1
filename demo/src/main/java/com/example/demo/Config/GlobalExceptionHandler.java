@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, String>> handleIllegalStateException(IllegalStateException ex) {
         return ResponseEntity
-                .status(HttpStatus.CONFLICT) // HTTP 409 (Conflicto / Ya existe) o HttpStatus.BAD_REQUEST (400)
+                .status(HttpStatus.CONFLICT)
                 .body(Map.of("message", ex.getMessage()));
     }
 
