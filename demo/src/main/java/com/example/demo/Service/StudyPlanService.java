@@ -35,15 +35,15 @@ public class StudyPlanService {
     }
 
     public StudyPlanEntity createStudyPlan(Long careerId){
-        studyPlanRepository.findByCareerIdAndStatus(careerId, StudyPlanStatus.CURRENT)
+        studyPlanRepository.findByCareerIdAndStatus(careerId, StudyPlanStatus.VIGENTE)
                         .ifPresent(previousPlan -> {
-                            previousPlan.setStatus(StudyPlanStatus.NOT_CURRENT);
+                            previousPlan.setStatus(StudyPlanStatus.NO_VIGENTE);
                             studyPlanRepository.save(previousPlan);
                         });
 
         StudyPlanEntity studyPlan = new StudyPlanEntity();
         studyPlan.setCareerId(careerId);
-        studyPlan.setStatus(StudyPlanStatus.CURRENT);
+        studyPlan.setStatus(StudyPlanStatus.VIGENTE);
         return studyPlanRepository.save(studyPlan);
     }
 

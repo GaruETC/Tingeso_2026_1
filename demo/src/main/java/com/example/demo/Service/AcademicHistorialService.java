@@ -18,6 +18,6 @@ public class AcademicHistorialService {
     }
 
     public List<AcademicHistorialEntity> getPassedSubjectsByStudent(Long studentId) {
-        return academicHistorialRepository.findByStudentIdAndStatus(studentId, AcademicHistorialStatus.PASSED);
+        return academicHistorialRepository.findByStudentIdAndStatus(studentId, AcademicHistorialStatus.APROBADO);
     }
 }

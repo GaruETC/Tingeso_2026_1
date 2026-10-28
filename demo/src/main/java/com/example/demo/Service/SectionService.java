@@ -69,7 +69,7 @@ public class SectionService {
         SubjectEntity subject = subjectService.getSubjectById(sectionDTO.subjectId());
         AcademicTermEntity academicTerm = academicTermService.getAcademicTermById(sectionDTO.academicTermId());
 
-        if (teacher.getStatus() != TeacherStatus.ACTIVE){
+        if (teacher.getStatus() != TeacherStatus.ACTIVO){
             throw new IllegalStateException(
                     "El profesor asociado debe encontrarse activo"
             );
@@ -79,7 +79,7 @@ public class SectionService {
                     "Ya existe una seccion asociada a esta asignatura en este periodo academico"
             );
         }
-        if (academicTerm.getStatus() == AcademicTermStatus.CLOSED){
+        if (academicTerm.getStatus() == AcademicTermStatus.CERRADO){
             throw new IllegalStateException(
                     "Este periodo academico esta cerrado"
             );

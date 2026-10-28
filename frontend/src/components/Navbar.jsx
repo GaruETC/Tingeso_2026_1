@@ -65,6 +65,7 @@ export default function Navbar() {
                     )}
                 </ul>
 
+
                 <div className="d-flex align-items-center gap-3">
                     {keycloak.authenticated ? (
                         <>

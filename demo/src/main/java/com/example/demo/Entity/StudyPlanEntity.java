@@ -17,5 +17,5 @@ public class StudyPlanEntity {
     private Long careerId;
 
     @Enumerated(EnumType.STRING)
-    private StudyPlanStatus status = StudyPlanStatus.CURRENT;
+    private StudyPlanStatus status = StudyPlanStatus.VIGENTE;
 }

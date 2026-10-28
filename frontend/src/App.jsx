@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import TeachersView from './pages/TeachersView.jsx';
-import StudentsView from "./pages/StudentsView.jsx";
-import CareersView from "./pages/CareersView.jsx";
+import TeachersView from './pages/TeachersView';
+import StudentsView from "./pages/StudentsView";
+import CareersView from "./pages/CareersView";
 import { PrivateRoute } from './components/PrivateRoute';
 
 function Home() {

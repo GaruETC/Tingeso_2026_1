@@ -129,14 +129,14 @@ public class StudentService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "No se encontró la carrera con id: " + studentDto.careerId()
                 ));
-        if (career.getStatus().equals(CareerStatus.INACTIVE)){
+        if (career.getStatus().equals(CareerStatus.INACTIVO)){
             throw new IllegalStateException(
                     "No se puede registrar en la carrera ya que esta inactiva"
             );
         }
 
         StudyPlanEntity studyPlan = studyPlanRepository
-                .findByCareerIdAndStatus(studentDto.careerId(), StudyPlanStatus.CURRENT)
+                .findByCareerIdAndStatus(studentDto.careerId(), StudyPlanStatus.VIGENTE)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "No existe un plan de estudio vigente para la carrera con id: " + studentDto.careerId()
                 ));
@@ -172,10 +172,10 @@ public class StudentService {
                 .orElseThrow(() -> new IllegalStateException(
                         "Estudiante no encontrado: " + id
                 ));
-        boolean canUpdate = status == StudentStatus.REGULAR || status == StudentStatus.DEFERRED || status == StudentStatus.TEMPORARY_WITHDRAWAL;
+        boolean canUpdate = status == StudentStatus.REGULAR || status == StudentStatus.APLAZADO || status == StudentStatus.RETIRO_TEMPORAL;
         if (!canUpdate){
             throw new IllegalStateException(
-                    "Solo se puede modificar REGULAR, DEFERRED y TEMPORARY_WITHDRAWAL"
+                    "Solo se puede modificar REGULAR, APLAZADO y RETIRO_TEMPORAL"
             );
         }
 

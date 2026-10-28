@@ -127,7 +127,7 @@ public class RegistrationService {
 
         //if subejct is already approve
         for (AcademicHistorialEntity record : historyList){
-            if (record.getStatus().equals(AcademicHistorialStatus.PASSED)){
+            if (record.getStatus().equals(AcademicHistorialStatus.APROBADO)){
                 throw new IllegalStateException(
                         "La asignatura ya fue aprovada"
                 );
@@ -136,7 +136,7 @@ public class RegistrationService {
         //count how many times failed
         int failCount = 0;
         for (AcademicHistorialEntity record : historyList){
-            if (record.getStatus().equals(AcademicHistorialStatus.FAILED)){
+            if (record.getStatus().equals(AcademicHistorialStatus.REPROBADO)){
                 failCount++;
             }
         }
@@ -159,7 +159,7 @@ public class RegistrationService {
 
         for (Long prereqId : prerequeIds){
             if (!academicHistorialRepository
-                    .existsByStudentIdAndSubjectIdAndStatus(studentId, prereqId, AcademicHistorialStatus.PASSED)){
+                    .existsByStudentIdAndSubjectIdAndStatus(studentId, prereqId, AcademicHistorialStatus.APROBADO)){
                 return false;
             }
         }
@@ -174,7 +174,7 @@ public class RegistrationService {
         for (SubjectEntity lowerSubject : lowerSubjects){
             //already approved?
             boolean passed = academicHistorialRepository
-                    .existsByStudentIdAndSubjectIdAndStatus(student.getId(), lowerSubject.getId(), AcademicHistorialStatus.PASSED);
+                    .existsByStudentIdAndSubjectIdAndStatus(student.getId(), lowerSubject.getId(), AcademicHistorialStatus.APROBADO);
             if (passed){
                 continue;
             }
@@ -237,7 +237,7 @@ public class RegistrationService {
         SectionEntity section = sectionService.getSectionById(sectionId);
 
         AcademicTermEntity term = academicTermService.getAcademicTermById(section.getAcademicTermId());
-        if (term.getStatus().equals(AcademicTermStatus.CLOSED)){
+        if (term.getStatus().equals(AcademicTermStatus.CERRADO)){
             throw new IllegalStateException("No se puede registrar notas ya que el periodo academico al que corresponde la seccion, esta cerrado");
         }
 

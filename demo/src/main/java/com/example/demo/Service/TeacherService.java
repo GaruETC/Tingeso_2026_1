@@ -57,7 +57,7 @@ public class TeacherService {
     }
 
     public List<TeacherEntity> getActiveTeachers(){
-        return teacherRepository.findByStatus(TeacherStatus.ACTIVE);
+        return teacherRepository.findByStatus(TeacherStatus.ACTIVO);
     }
 
     public TeacherEntity registerTeacher(TeacherDto teacherDto){
@@ -93,7 +93,7 @@ public class TeacherService {
             teacher.setFullName(teacherDto.fullName());
             teacher.setTitle(teacherDto.title());
             teacher.setDegree(teacherDto.degree());
-            teacher.setStatus(TeacherStatus.ACTIVE);
+            teacher.setStatus(TeacherStatus.ACTIVO);
 
             return teacherRepository.save(teacher);
         } catch (Exception e) {
@@ -147,7 +147,7 @@ public class TeacherService {
             return;
         }
 
-        if (status == TeacherStatus.INACTIVE) {
+        if (status == TeacherStatus.INACTIVO) {
             academicTermService.getActiveTerm().ifPresent(openTerm -> {
                 if (sectionRepository.existsByTeacherIdAndAcademicTermId(teacherId, openTerm.getId())) {
                     throw new IllegalStateException(

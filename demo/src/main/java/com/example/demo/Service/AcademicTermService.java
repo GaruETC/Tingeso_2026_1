@@ -52,11 +52,11 @@ public class AcademicTermService {
     }
 
     public List<AcademicTermEntity> getInactiveTerms(){
-        return academicTermRepository.findByStatus(AcademicTermStatus.CLOSED);
+        return academicTermRepository.findByStatus(AcademicTermStatus.CERRADO);
     }
 
     public Optional<AcademicTermEntity> getActiveTerm(){
-        return academicTermRepository.findFirstByStatus(AcademicTermStatus.OPEN);
+        return academicTermRepository.findFirstByStatus(AcademicTermStatus.ABIERTO);
     }
 
     public AcademicTermEntity createAcademicTerm(AcademicTermDto dto){
@@ -65,21 +65,21 @@ public class AcademicTermService {
         if (academicTermRepository.existsByPeriod(period)){
             throw new IllegalArgumentException("Ya existe un periodo academico con periodo: " + period);
         }
-        if (academicTermRepository.existsByStatus(AcademicTermStatus.OPEN)){
+        if (academicTermRepository.existsByStatus(AcademicTermStatus.ABIERTO)){
             throw new IllegalStateException(
                     "Ya existe un periodo academico con estado ABIERTO"
             );
         }
         AcademicTermEntity term = new AcademicTermEntity();
         term.setPeriod(period);
-        term.setStatus(AcademicTermStatus.OPEN);
+        term.setStatus(AcademicTermStatus.ABIERTO);
 
         return academicTermRepository.save(term);
     }
 
     public void closeAcademicTerm(Long termId){
         AcademicTermEntity term = getAcademicTermById(termId);
-        if (!term.getStatus().equals(AcademicTermStatus.OPEN)){
+        if (!term.getStatus().equals(AcademicTermStatus.ABIERTO)){
             throw new IllegalStateException("Solo se puede cerrar un periodo academico que este ABIERTO");
         }
 
@@ -116,31 +116,31 @@ public class AcademicTermService {
 
             boolean passed = reg.getGrade() >= 4.0f;
             if (passed){
-                historial.setStatus(AcademicHistorialStatus.PASSED);
+                historial.setStatus(AcademicHistorialStatus.APROBADO);
             } else{
-                historial.setStatus(AcademicHistorialStatus.FAILED);
+                historial.setStatus(AcademicHistorialStatus.REPROBADO);
             }
             academicHistorialRepository.save(historial);
 
             StudentEntity student = studentService.getStudentById(reg.getStudentId());
             if (!passed){ // if has failed 2 times the same subject
                 int failedCount = academicHistorialRepository
-                        .countByStudentIdAndSubjectIdAndStatus(reg.getStudentId(), section.getSubjectId(), AcademicHistorialStatus.FAILED);
+                        .countByStudentIdAndSubjectIdAndStatus(reg.getStudentId(), section.getSubjectId(), AcademicHistorialStatus.REPROBADO);
                 if (failedCount >= 2){
-                    student.setStatus(StudentStatus.DELETED);
+                    student.setStatus(StudentStatus.ELIMINADO);
                     studentRepository.save(student);
                 }
             } else{ // if has passed all subjects in his studyplan
                 int totalPlanSubjects = subjectRepository.countByStudyPlanId(student.getStudyPlanId());
                 int totalApprovedSubjects = academicHistorialRepository
-                        .countByStudentIdAndStatus(reg.getStudentId(), AcademicHistorialStatus.PASSED);
+                        .countByStudentIdAndStatus(reg.getStudentId(), AcademicHistorialStatus.APROBADO);
                 if (totalApprovedSubjects == totalPlanSubjects){
-                    student.setStatus(StudentStatus.GRADUATED);
+                    student.setStatus(StudentStatus.EGRESADO);
                     studentRepository.save(student);
                 }
             }
         }
-        term.setStatus(AcademicTermStatus.CLOSED);
+        term.setStatus(AcademicTermStatus.CERRADO);
         academicTermRepository.save(term);
     }
 }
