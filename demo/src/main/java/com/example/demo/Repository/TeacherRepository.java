@@ -15,6 +15,8 @@ public interface TeacherRepository extends JpaRepository<TeacherEntity, Long> {
 
     List<TeacherEntity> findByStatus(TeacherStatus status);
 
+    Optional<TeacherEntity> findByEmail(String email);
+
     boolean existsByRun(String run);
 
     boolean existsByEmail(String email);

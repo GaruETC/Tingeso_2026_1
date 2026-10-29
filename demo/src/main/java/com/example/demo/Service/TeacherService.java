@@ -3,6 +3,7 @@ package com.example.demo.Service;
 import com.example.demo.DTO.TeacherDto;
 import com.example.demo.Entity.Enum.AcademicTermStatus;
 import com.example.demo.Entity.Enum.TeacherStatus;
+import com.example.demo.Entity.StudentEntity;
 import com.example.demo.Entity.TeacherEntity;
 import com.example.demo.Repository.AcademicTermRepository;
 import com.example.demo.Repository.SectionRepository;
@@ -33,6 +34,13 @@ public class TeacherService {
 
     public List<TeacherEntity> getTeachersByStatus(TeacherStatus status){
         return teacherRepository.findByStatus(status);
+    }
+
+    public TeacherEntity getTeacherByEmail(String email){
+        return teacherRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException(
+                        "No se encontró el profesor con email: " + email
+                ));
     }
 
     public TeacherEntity getTeacherById(Long teacherId){

@@ -19,6 +19,13 @@ public class AcademicHistorialController {
 
     private final AcademicHistorialService academicHistorialService;
 
+    @GetMapping("/student/{studentId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
+    public ResponseEntity<List<AcademicHistorialEntity>> getAcademicTerms(@PathVariable Long studentId){
+        List<AcademicHistorialEntity> subjects = academicHistorialService.getAcademicTerms(studentId);
+        return ResponseEntity.ok(subjects);
+    }
+
     @GetMapping("/student/{studentId}/passed-records")
     @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
     public ResponseEntity<List<AcademicHistorialEntity>> getPassedRecordsByStudent(@PathVariable Long studentId){

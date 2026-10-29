@@ -28,11 +28,14 @@ export default function RegistrationsView() {
         ])
             .then(([studentRes, termsRes]) => {
                 const student = studentRes.data;
-
                 const activeTerm = termsRes.data;
 
                 if (!student || !student.id) {
-                    alert("No se pudo identificar tu usuario.");
+                    alert("No se pudo identificar tu usuario");
+                    return;
+                }
+                if (!activeTerm || !activeTerm.id){
+                    setLoading(false)
                     return;
                 }
 
@@ -96,6 +99,23 @@ export default function RegistrationsView() {
     const isAlreadyEnrolled = (sectionId) => {
         return myRegistrations.some(reg => reg.sectionId === sectionId);
     };
+
+    if (!loading && !currentTermId) {
+        return (
+            <div className="container mt-5">
+                <div className="alert alert-warning text-center shadow-sm p-5">
+                    <h3 className="text-warning-emphasis mb-3">
+                        <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                        No hay periodo académico activo
+                    </h3>
+                    <p className="fs-5 text-muted">
+                        Actualmente no existe un periodo academico activo para tomar ramos.
+                        Por favor, intenta más tarde o contacta a la administración de tu carrera.
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="container mt-4">

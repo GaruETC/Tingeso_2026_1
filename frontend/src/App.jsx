@@ -9,6 +9,8 @@ import { PrivateRoute } from './components/PrivateRoute';
 import SubjectsView from "./pages/SubjectsView.jsx";
 import AcademicTermsView from "./pages/AcademicTermsView.jsx";
 import RegistrationsView from "./pages/RegistrationsView.jsx";
+import TeacherGradesView from "./pages/TeacherGrades.jsx";
+import StudentHistoryView from "./pages/StudentHistorialView.jsx";
 
 function Home() {
     return (
@@ -96,6 +98,24 @@ export default function App() {
                     element={
                         <PrivateRoute requiredRole="STUDENT">
                             <RegistrationsView />
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path="/student-historial"
+                    element={
+                        <PrivateRoute requiredRole="STUDENT">
+                            <StudentHistoryView />
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path="/teacher-grades"
+                    element={
+                        <PrivateRoute requiredRole="TEACHER">
+                            <TeacherGradesView />
                         </PrivateRoute>
                     }
                 />

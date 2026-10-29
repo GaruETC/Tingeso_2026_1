@@ -79,6 +79,22 @@ export default function Navbar() {
                             </Link>
                         </li>
                     )}
+
+                    {isStudent && (
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/student-historial">
+                                <i className="bi bi-card-checklist me-1"></i>Historial
+                            </Link>
+                        </li>
+                    )}
+
+                    {isTeacher && (
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/teacher-grades">
+                                <i className="bi bi-card-checklist me-1"></i>Notas Finales
+                            </Link>
+                        </li>
+                    )}
                 </ul>
 
 

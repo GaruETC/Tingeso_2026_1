@@ -4,7 +4,7 @@ import apiClient from '../services/http-common';
 export default function SectionsView() {
     const [teachers, setTeachers] = useState([]);
     const [subjects, setSubjects] = useState([]);
-    const [academicTerms, setAcademicTerms] = useState([]);
+    const [currentTerm, setCurrentTerm] = useState(null);
 
     const [sections, setSections] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -14,7 +14,6 @@ export default function SectionsView() {
     const [formData, setFormData] = useState({
         teacherId: '',
         subjectId: '',
-        academicTermId: '',
         maxCapacity: 30,
         scheduleInput: ''
     });
@@ -25,19 +24,19 @@ export default function SectionsView() {
             apiClient.get('/sections'),
             apiClient.get('/teachers'),
             apiClient.get('/subjects'),
-            apiClient.get('/academic-terms?status=ABIERTO')
+            apiClient.get('/academic-terms/current')
         ])
-        .then(([sectionsRes, teachersRes, subjectsRes, termsRes]) => {
-            setSections(sectionsRes.data);
-            setTeachers(teachersRes.data);
-            setSubjects(subjectsRes.data);
-            setAcademicTerms(termsRes.data);
-        })
-        .catch(err => {
-            console.error("Error cargando datos", err);
-            setError("Error al cargar los datos maestros. Verifica los endpoints.");
-        })
-        .finally(() => setLoading(false));
+            .then(([sectionsRes, teachersRes, subjectsRes, termRes]) => {
+                setSections(sectionsRes.data);
+                setTeachers(teachersRes.data);
+                setSubjects(subjectsRes.data);
+                setCurrentTerm(termRes.data);
+            })
+            .catch(err => {
+                console.error("Error cargando datos", err);
+                setError("Error al cargar los datos maestros. Verifica los endpoints.");
+            })
+            .finally(() => setLoading(false));
     }, []);
 
     const handleChange = (e) => {
@@ -50,6 +49,11 @@ export default function SectionsView() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (!currentTerm || !currentTerm.id) {
+            alert("No hay un periodo académico activo para crear la sección.");
+            return;
+        }
 
         const scheduleArray = formData.scheduleInput
             .split(',')
@@ -66,7 +70,7 @@ export default function SectionsView() {
         const payload = {
             teacherId: Number(formData.teacherId),
             subjectId: Number(formData.subjectId),
-            academicTermId: Number(formData.academicTermId),
+            academicTermId: currentTerm.id,
             maxCapacity: formData.maxCapacity,
             schedule: scheduleArray
         };
@@ -75,7 +79,7 @@ export default function SectionsView() {
             .then((res) => {
                 alert('Sección creada con éxito');
                 setFormData({
-                    teacherId: '', subjectId: '', academicTermId: '',
+                    teacherId: '', subjectId: '',
                     maxCapacity: 30, scheduleInput: ''
                 });
                 setSections(prev => [...prev, res.data]);
@@ -95,7 +99,7 @@ export default function SectionsView() {
 
     const getTeacherName = (id) => teachers.find(t => t.id === id)?.fullName || 'Desconocido';
     const getSubjectName = (id) => subjects.find(s => s.id === id)?.name || 'Desconocida';
-    const getTermName = (id) => academicTerms.find(a => a.id === id)?.period || id;
+    const getTermName = (id) => currentTerm ? currentTerm.period : 'Cargando...';
 
     return (
         <div className="container mt-4">
@@ -111,12 +115,9 @@ export default function SectionsView() {
                     <form onSubmit={handleSubmit} className="row g-3 align-items-end">
                         <div className="col-md-3">
                             <label className="form-label">Periodo Académico</label>
-                            <select name="academicTermId" className="form-select" value={formData.academicTermId} onChange={handleChange} required>
-                                <option value="">Seleccione...</option>
-                                {academicTerms.map(term => (
-                                    <option key={term.id} value={term.id}>{term.period}</option>
-                                ))}
-                            </select>
+                            <div className="form-control">
+                                {currentTerm ? currentTerm.period : 'Cargando...'}
+                            </div>
                         </div>
 
                         <div className="col-md-4">
@@ -151,7 +152,7 @@ export default function SectionsView() {
                         </div>
 
                         <div className="col-md-3 text-end">
-                            <button type="submit" className="btn btn-success w-100" disabled={submitting}>
+                            <button type="submit" className="btn btn-success w-100" disabled={submitting || !currentTerm}>
                                 {submitting ? 'Guardando...' : 'Crear Sección'}
                             </button>
                         </div>
@@ -164,40 +165,40 @@ export default function SectionsView() {
                     <div className="table-responsive">
                         <table className="table table-hover table-striped mb-0 align-middle">
                             <thead className="table-dark">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Periodo</th>
-                                    <th>Asignatura</th>
-                                    <th>Docente</th>
-                                    <th>Horario</th>
-                                    <th>Cupos</th>
-                                    <th className="text-center">Acciones</th>
-                                </tr>
+                            <tr>
+                                <th>ID</th>
+                                <th>Periodo</th>
+                                <th>Asignatura</th>
+                                <th>Docente</th>
+                                <th>Horario</th>
+                                <th>Cupos</th>
+                                <th className="text-center">Acciones</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                {loading ? (
-                                    <tr><td colSpan="7" className="text-center py-4">Cargando datos...</td></tr>
-                                ) : sections.length === 0 ? (
-                                    <tr><td colSpan="7" className="text-center py-4 text-muted">No hay secciones aperturadas.</td></tr>
-                                ) : (
-                                    sections.map((sec) => (
-                                        <tr key={sec.id}>
-                                            <td><strong>{sec.id}</strong></td>
-                                            <td>{getTermName(sec.academicTermId)}</td>
-                                            <td>{getSubjectName(sec.subjectId)}</td>
-                                            <td>{getTeacherName(sec.teacherId)}</td>
-                                            <td>
-                                                {Array.isArray(sec.schedule) ? sec.schedule.join(' - ') : sec.schedule}
-                                            </td>
-                                            <td><span className="badge bg-info text-dark">{sec.maxCapacity}</span></td>
-                                            <td className="text-center">
-                                                <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(sec.id)}>
-                                                    <i className="bi bi-trash-fill"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
+                            {loading ? (
+                                <tr><td colSpan="7" className="text-center py-4">Cargando datos...</td></tr>
+                            ) : sections.length === 0 ? (
+                                <tr><td colSpan="7" className="text-center py-4 text-muted">No hay secciones aperturadas.</td></tr>
+                            ) : (
+                                sections.map((sec) => (
+                                    <tr key={sec.id}>
+                                        <td><strong>{sec.id}</strong></td>
+                                        <td>{getTermName(sec.academicTermId)}</td>
+                                        <td>{getSubjectName(sec.subjectId)}</td>
+                                        <td>{getTeacherName(sec.teacherId)}</td>
+                                        <td>
+                                            {Array.isArray(sec.schedule) ? sec.schedule.join(' - ') : sec.schedule}
+                                        </td>
+                                        <td><span className="badge bg-info text-dark">{sec.maxCapacity}</span></td>
+                                        <td className="text-center">
+                                            <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(sec.id)}>
+                                                <i className="bi bi-trash-fill"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                             </tbody>
                         </table>
                     </div>

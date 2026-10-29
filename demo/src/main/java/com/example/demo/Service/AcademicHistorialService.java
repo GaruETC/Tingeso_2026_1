@@ -17,6 +17,10 @@ public class AcademicHistorialService {
         this.academicHistorialRepository = academicHistorialRepository;
     }
 
+    public List<AcademicHistorialEntity> getAcademicTerms(Long studentId) {
+        return academicHistorialRepository.findByStudentId(studentId);
+    }
+
     public List<AcademicHistorialEntity> getPassedSubjectsByStudent(Long studentId) {
         return academicHistorialRepository.findByStudentIdAndStatus(studentId, AcademicHistorialStatus.APROBADO);
     }

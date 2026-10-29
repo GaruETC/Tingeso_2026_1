@@ -24,5 +24,4 @@ public class SectionEntity {
     private List<String> schedule;
     @Column(nullable = false)
     private int maxCapacity;
-
 }
