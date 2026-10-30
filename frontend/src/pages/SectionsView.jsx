@@ -4,7 +4,8 @@ import apiClient from '../services/http-common';
 export default function SectionsView() {
     const [teachers, setTeachers] = useState([]);
     const [subjects, setSubjects] = useState([]);
-    const [currentTerm, setCurrentTerm] = useState(null);
+    const [terms, setTerms] = useState([]);
+    const [selectedTermId, setSelectedTermId] = useState('');
 
     const [sections, setSections] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -24,13 +25,20 @@ export default function SectionsView() {
             apiClient.get('/sections'),
             apiClient.get('/teachers'),
             apiClient.get('/subjects'),
-            apiClient.get('/academic-terms/current')
+            apiClient.get('/academic-terms/current'),
+            apiClient.get('/academic-terms')
         ])
-            .then(([sectionsRes, teachersRes, subjectsRes, termRes]) => {
+            .then(([sectionsRes, teachersRes, subjectsRes, currentTermRes, termsRes]) => {
                 setSections(sectionsRes.data);
                 setTeachers(teachersRes.data);
                 setSubjects(subjectsRes.data);
-                setCurrentTerm(termRes.data);
+                setTerms(termsRes.data);
+
+                if (currentTermRes.data && currentTermRes.data.id) {
+                    setSelectedTermId(currentTermRes.data.id);
+                } else if (termsRes.data.length > 0) {
+                    setSelectedTermId(termsRes.data[0].id);
+                }
             })
             .catch(err => {
                 console.error("Error cargando datos", err);
@@ -50,8 +58,8 @@ export default function SectionsView() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!currentTerm || !currentTerm.id) {
-            alert("No hay un periodo académico activo para crear la sección.");
+        if (!selectedTermId) {
+            alert("Debe seleccionar un periodo académico para crear la sección.");
             return;
         }
 
@@ -70,7 +78,7 @@ export default function SectionsView() {
         const payload = {
             teacherId: Number(formData.teacherId),
             subjectId: Number(formData.subjectId),
-            academicTermId: currentTerm.id,
+            academicTermId: Number(selectedTermId),
             maxCapacity: formData.maxCapacity,
             schedule: scheduleArray
         };
@@ -99,7 +107,13 @@ export default function SectionsView() {
 
     const getTeacherName = (id) => teachers.find(t => t.id === id)?.fullName || 'Desconocido';
     const getSubjectName = (id) => subjects.find(s => s.id === id)?.name || 'Desconocida';
-    const getTermName = (id) => currentTerm ? currentTerm.period : 'Cargando...';
+
+    const getTermName = (termId) => {
+        const foundTerm = terms.find(t => t.id === termId);
+        return foundTerm ? foundTerm.period : `Periodo ${termId}`;
+    };
+
+    const filteredSections = sections.filter(sec => Number(sec.academicTermId) === Number(selectedTermId));
 
     return (
         <div className="container mt-4">
@@ -115,9 +129,17 @@ export default function SectionsView() {
                     <form onSubmit={handleSubmit} className="row g-3 align-items-end">
                         <div className="col-md-3">
                             <label className="form-label">Periodo Académico</label>
-                            <div className="form-control">
-                                {currentTerm ? currentTerm.period : 'Cargando...'}
-                            </div>
+                            <select
+                                className="form-select"
+                                value={selectedTermId}
+                                onChange={(e) => setSelectedTermId(e.target.value)}
+                                required
+                            >
+                                <option value="">Seleccione periodo...</option>
+                                {terms.map(term => (
+                                    <option key={term.id} value={term.id}>{term.period}</option>
+                                ))}
+                            </select>
                         </div>
 
                         <div className="col-md-4">
@@ -152,7 +174,7 @@ export default function SectionsView() {
                         </div>
 
                         <div className="col-md-3 text-end">
-                            <button type="submit" className="btn btn-success w-100" disabled={submitting || !currentTerm}>
+                            <button type="submit" className="btn btn-success w-100" disabled={submitting || !selectedTermId}>
                                 {submitting ? 'Guardando...' : 'Crear Sección'}
                             </button>
                         </div>
@@ -178,13 +200,13 @@ export default function SectionsView() {
                             <tbody>
                             {loading ? (
                                 <tr><td colSpan="7" className="text-center py-4">Cargando datos...</td></tr>
-                            ) : sections.length === 0 ? (
-                                <tr><td colSpan="7" className="text-center py-4 text-muted">No hay secciones aperturadas.</td></tr>
+                            ) : filteredSections.length === 0 ? (
+                                <tr><td colSpan="7" className="text-center py-4 text-muted">No hay secciones aperturadas para este periodo.</td></tr>
                             ) : (
-                                sections.map((sec) => (
+                                filteredSections.map((sec) => (
                                     <tr key={sec.id}>
                                         <td><strong>{sec.id}</strong></td>
-                                        <td>{getTermName(sec.academicTermId)}</td>
+                                        <td><span className="badge bg-secondary">{getTermName(sec.academicTermId)}</span></td>
                                         <td>{getSubjectName(sec.subjectId)}</td>
                                         <td>{getTeacherName(sec.teacherId)}</td>
                                         <td>

@@ -111,7 +111,6 @@ export default function CareersView() {
                 </div>
             )}
 
-            {/* Formulario de Carrera */}
             <div className="card shadow-sm mb-4">
                 <div className="card-header bg-light">
                     <strong>Registrar Nueva Carrera</strong>
@@ -179,7 +178,6 @@ export default function CareersView() {
                 </div>
             </div>
 
-            {/* Panel de Asignación de Plan Vigente */}
             {selectedCareer && (
                 <div className="card shadow-sm border-primary mb-4">
                     <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
@@ -220,7 +218,6 @@ export default function CareersView() {
                 </div>
             )}
 
-            {/* Tabla de Carreras */}
             <div className="card shadow-sm">
                 <div className="card-body p-0">
                     <div className="table-responsive">
