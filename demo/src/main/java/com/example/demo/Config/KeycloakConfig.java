@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class KeycloakConfig {
 
-    @Value("${keycloak.auth-server-url:http://localhost:9090}")
+    @Value("${keycloak.auth-server-url:http://localhost:8080}")
     private String serverUrl;
 
     @Value("${keycloak.admin.realm:master}")
