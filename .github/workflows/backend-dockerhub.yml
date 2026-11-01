@@ -20,7 +20,7 @@ jobs:
           java-version: '21'
           distribution: 'microsoft'
           cache: 'maven'
-          
+
       - name: Ejecutar pruebas unitarias
         working-directory: ./demo
         run: mvn clean test
@@ -29,6 +29,16 @@ jobs:
         working-directory: ./demo
         run: mvn verify -DskipUnitTests
 
+      - name: Generar JAR sin tests
+        working-directory: ./demo
+        run: mvn clean package -DskipTests
+
+      - name: Subir JAR como artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipt-backend-jar
+          path: demo/target/ipt-backend.jar
+
   build-and-publish:
     name: Construccion y publicacion de Docker
     needs: backend-tests
@@ -36,6 +46,12 @@ jobs:
     steps:
       - name: Obtener el codigo fuente
         uses: actions/checkout@v4
+
+      - name: Descargar JAR generado
+        uses: actions/download-artifact@v4
+        with:
+          name: ipt-backend-jar
+          path: demo/target
 
       - name: Login en Docker Hub
         uses: docker/login-action@v3
@@ -59,9 +75,3 @@ jobs:
           context: ./frontend
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/ipt-frontend:latest
-
-
-
-
-
-    
