@@ -241,7 +241,7 @@ public class RegistrationService {
 
     public void submitGrades(Long sectionId, SubmitGradesDto dto){
         SectionEntity section = sectionService.getSectionById(sectionId);
-
+        // academic term is closed
         AcademicTermEntity term = academicTermService.getAcademicTermById(section.getAcademicTermId());
         if (term.getStatus().equals(AcademicTermStatus.CERRADO)){
             throw new IllegalStateException("No se puede registrar notas ya que el periodo academico al que corresponde la seccion, esta cerrado");
