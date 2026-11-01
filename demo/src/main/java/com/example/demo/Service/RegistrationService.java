@@ -226,6 +226,7 @@ public class RegistrationService {
     }
 
     public void cancelRegistration(Long id){
+        // verify if there is an active academic term
         RegistrationEntity registration = getRegistrationById(id);
         AcademicTermEntity activeTerm = academicTermService.getActiveTerm()
                 .orElseThrow(() -> new IllegalStateException(
