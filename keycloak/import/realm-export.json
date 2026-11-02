@@ -915,9 +915,12 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "http://localhost:8070/*"
+        "https://ipt-tingeso.duckdns.org/*",
+        "http://localhost:8070/*",
+        "http://localhost:5173/*"
       ],
       "webOrigins": [
+        "https://ipt-tingeso.duckdns.org",
         "+"
       ],
       "notBefore": 0,
