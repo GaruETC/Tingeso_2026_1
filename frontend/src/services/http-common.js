@@ -2,7 +2,7 @@ import axios from 'axios';
 import keycloak from './keycloak';
 
 const apiClient = axios.create({
-    baseURL: 'http://localhost:8080/api',
+    baseURL: 'https://ipt-tingeso.duckdns.org/api',
     headers: {
         'Content-Type': 'application/json',
     },
