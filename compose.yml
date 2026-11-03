@@ -34,6 +34,7 @@ services:
     volumes:
       - ./keycloak/import:/opt/keycloak/data/import
       - keycloak_data:/opt/keycloak/data
+      - ./keycloak-themes:/opt/keycloak/themes
     networks:
       - app-network
     restart: always
