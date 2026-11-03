@@ -59,7 +59,7 @@ export default function Navbar() {
                     {isAdmin && (
                         <li className="nav-item">
                             <Link className="nav-link" to="/academic-terms">
-                                <i className="bi bi-calendar-range me-1"></i>Periodos Academicos
+                                <i className="bi bi-calendar3 me-2"></i>Periodos Academicos
                             </Link>
                         </li>
                     )}
@@ -75,7 +75,7 @@ export default function Navbar() {
                     {isStudent && (
                         <li className="nav-item">
                             <Link className="nav-link" to="/registrations">
-                                <i className="bi bi-card-checklist me-1"></i>Inscripción
+                                <i className="bi bi-laptop me-2"></i>Inscripción
                             </Link>
                         </li>
                     )}
@@ -83,7 +83,7 @@ export default function Navbar() {
                     {isStudent && (
                         <li className="nav-item">
                             <Link className="nav-link" to="/student-historial">
-                                <i className="bi bi-card-checklist me-1"></i>Historial
+                                <i className="bi bi-clock-history me-2"></i>Historial
                             </Link>
                         </li>
                     )}
@@ -91,7 +91,7 @@ export default function Navbar() {
                     {isTeacher && (
                         <li className="nav-item">
                             <Link className="nav-link" to="/teacher-grades">
-                                <i className="bi bi-card-checklist me-1"></i>Notas Finales
+                                <i className="bi bi-journal-text me-2"></i>Notas Finales
                             </Link>
                         </li>
                     )}

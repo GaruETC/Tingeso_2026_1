@@ -44,9 +44,9 @@ export default function StudentHistoryView() {
         <div className="container mt-4">
             <h2 className="mb-4"><i className="bi bi-clock-history me-2"></i>Mi Historial Académico</h2>
 
-            <div className="card shadow-sm border-success">
+            <div className="card shadow-sm border-primary">
                 <div className="card-header bg-success text-white">
-                    <strong>Asignaturas Aprobadas</strong>
+                    <strong>Historial de Asignaturas</strong>
                 </div>
                 <div className="card-body p-0">
                     <div className="table-responsive">
