@@ -1,5 +1,8 @@
-body {
+body,
+.login-pf-page,
+.pf-v5-c-background-image {
     background-color: #ffffff !important;
+    background-image: none !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
