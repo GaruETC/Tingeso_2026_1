@@ -11,7 +11,23 @@ body,
 }
 
 #kc-header {
-    display: none !important;
+    display: block !important;
+    margin-bottom: 24px !important;
+    text-align: center !important;
+    width: 100% !important;
+}
+
+#kc-header-wrapper {
+    visibility: hidden !important;
+}
+
+#kc-header-wrapper::before {
+    content: "Mish Booking" !important;
+    visibility: visible !important;
+    font-size: 2.2rem !important;
+    color: #1a1a1a !important;
+    font-weight: 800 !important;
+    display: block !important;
 }
 
 .pf-v5-c-login__main,
