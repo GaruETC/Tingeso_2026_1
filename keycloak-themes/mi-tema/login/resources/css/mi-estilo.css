@@ -22,7 +22,7 @@ body,
 }
 
 #kc-header-wrapper::before {
-    content: "Mish Booking" !important;
+    content: "Sistema Integrado de Gestión Académica" !important;
     visibility: visible !important;
     font-size: 2.2rem !important;
     color: #1a1a1a !important;

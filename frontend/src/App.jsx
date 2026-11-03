@@ -16,7 +16,7 @@ function Home() {
     return (
         <div className="container mt-5 text-center">
             <div className="p-5 mb-4 bg-light rounded-3 shadow-sm">
-                <h1 className="display-5 fw-bold">Sistema de Gestión de Ramos</h1>
+                <h1 className="display-5 fw-bold">Sistema Integrado de Gestión Académica</h1>
                 <p className="col-md-8 fs-5 mx-auto text-muted">
                     Plataforma académica integral para administración curricular, gestión docente e inscripción estudiantil.
                 </p>
