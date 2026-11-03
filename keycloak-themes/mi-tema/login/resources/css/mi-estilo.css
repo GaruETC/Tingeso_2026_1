@@ -1,7 +1,80 @@
 .login-pf body {
-    background-color: #1a1a1a;
+    background-color: #f8f9fa;
     background-image: none;
 }
-.pf-v5-c-button.pf-m-primary {
-    background-color: #8b5cf6;
+
+.login-pf-page .card-pf {
+    background: #ffffff;
+    border: 1px solid #0d6efd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.login-pf-page .login-pf-header {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+    padding: 20px 24px;
+    margin: 0 0 20px 0 !important;
+}
+
+.login-pf-page #kc-page-title {
+    color: #ffffff !important;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+    text-transform: capitalize;
+}
+
+.login-pf-page .form-group {
+    padding: 0 24px;
+}
+
+.login-pf-page #kc-form-options,
+.login-pf-page #kc-form-buttons {
+    padding: 0 24px;
+    margin-bottom: 20px;
+}
+
+.form-control {
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 14px;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+.login-pf-page .btn-primary {
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+    color: #ffffff !important;
+    font-weight: bold;
+    border-radius: 6px !important;
+    padding: 12px 20px !important;
+    font-size: 15px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.login-pf-page .btn-primary:hover {
+    background-color: #157347 !important;
+    border-color: #146c43 !important;
+}
+
+.login-pf-page a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.login-pf-page a:hover {
+    text-decoration: underline;
 }
