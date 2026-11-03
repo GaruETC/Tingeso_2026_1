@@ -1,80 +1,87 @@
-.login-pf body {
-    background-color: #f8f9fa;
-    background-image: none;
+body {
+    background-color: #f8f9fa !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
 }
 
+#kc-header {
+    display: none !important;
+}
+
+.pf-v5-c-login__main,
 .login-pf-page .card-pf {
-    background: #ffffff;
-    border: 1px solid #0d6efd;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    background: #ffffff !important;
+    max-width: 400px !important; /* Ancho fijo para que no se estire a toda la pantalla */
+    width: 100% !important;
+    margin: 0 auto !important;
+    border: 1px solid #0d6efd !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
     padding: 0 !important;
-    overflow: hidden;
+    overflow: hidden !important;
 }
 
-.login-pf-page .login-pf-header {
+.pf-v5-c-login__main-header,
+.login-pf-header {
     background-color: #0d6efd !important;
+    padding: 20px 24px !important;
+    margin: 0 !important;
+    border-bottom: none !important;
+}
+
+#kc-page-title,
+.pf-v5-c-title {
     color: #ffffff !important;
-    padding: 20px 24px;
-    margin: 0 0 20px 0 !important;
+    font-size: 1.25rem !important;
+    font-weight: bold !important;
+    margin: 0 !important;
+    text-align: left !important;
 }
 
-.login-pf-page #kc-page-title {
-    color: #ffffff !important;
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 0;
-    text-transform: capitalize;
+.pf-v5-c-login__main-body,
+#kc-content {
+    padding: 24px !important;
 }
 
-.login-pf-page .form-group {
-    padding: 0 24px;
+input[type="text"],
+input[type="password"] {
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
+    padding: 10px 14px !important;
+    font-size: 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 10px !important;
 }
 
-.login-pf-page #kc-form-options,
-.login-pf-page #kc-form-buttons {
-    padding: 0 24px;
-    margin-bottom: 20px;
+input:focus {
+    border-color: #0d6efd !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15) !important;
 }
 
-.form-control {
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    padding: 10px 14px;
-    font-size: 14px;
-}
-
-.form-control:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
-}
-
-.login-pf-page .btn-primary {
+#kc-login {
     background-color: #198754 !important;
     border-color: #198754 !important;
     color: #ffffff !important;
-    font-weight: bold;
+    font-weight: bold !important;
     border-radius: 6px !important;
     padding: 12px 20px !important;
-    font-size: 15px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    transition: background-color 0.15s ease-in-out;
+    font-size: 15px !important;
+    width: 100% !important;
+    margin-top: 15px !important;
+    cursor: pointer !important;
 }
 
-.login-pf-page .btn-primary:hover {
+#kc-login:hover {
     background-color: #157347 !important;
     border-color: #146c43 !important;
 }
 
-.login-pf-page a {
-    color: #0d6efd;
-    text-decoration: none;
-}
-
-.login-pf-page a:hover {
-    text-decoration: underline;
+.pf-v5-c-login__main-footer-links a {
+    color: #0d6efd !important;
+    text-decoration: none !important;
 }
