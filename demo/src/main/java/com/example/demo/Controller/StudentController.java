@@ -85,4 +85,10 @@ public class StudentController {
 
         return ResponseEntity.ok(student);
     }
+
+    @PutMapping("/{id}/matricular")
+    public ResponseEntity<StudentEntity> simularMatricula(@PathVariable Long id) {
+        StudentEntity estudiante = studentService.matricularEstudiante(id);
+        return ResponseEntity.ok(estudiante);
+    }
 }

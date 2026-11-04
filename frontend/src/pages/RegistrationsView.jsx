@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import apiClient from '../services/http-common';
 
 export default function RegistrationsView() {
+    // 1. NUEVO: Agregamos el estado para guardar todo el objeto del estudiante
+    const [student, setStudent] = useState(null);
+
     const [currentStudentId, setCurrentStudentId] = useState(null);
     const [currentTermId, setCurrentTermId] = useState(null);
-
     const [sections, setSections] = useState([]);
     const [subjects, setSubjects] = useState([]);
     const [myRegistrations, setMyRegistrations] = useState([]);
@@ -27,26 +29,30 @@ export default function RegistrationsView() {
             apiClient.get('/academic-terms/current')
         ])
             .then(([studentRes, termsRes]) => {
-                const student = studentRes.data;
+                const studentData = studentRes.data;
                 const activeTerm = termsRes.data;
 
-                if (!student || !student.id) {
+                if (!studentData || !studentData.id) {
                     alert("No se pudo identificar tu usuario");
                     return;
                 }
+
+                // Guardamos el objeto completo del estudiante
+                setStudent(studentData);
+                setCurrentStudentId(studentData.id);
+
                 if (!activeTerm || !activeTerm.id){
                     setLoading(false)
                     return;
                 }
 
                 const activeTermId = activeTerm.id;
-                setCurrentStudentId(student.id);
                 setCurrentTermId(activeTermId);
 
                 return Promise.all([
                     apiClient.get('/sections'),
                     apiClient.get('/subjects'),
-                    apiClient.get(`/registrations?studentId=${student.id}&termId=${activeTermId}`)
+                    apiClient.get(`/registrations?studentId=${studentData.id}&termId=${activeTermId}`)
                 ]).then(([sectionsRes, subjectsRes, regRes]) => {
                     const currentTermSections = sectionsRes.data.filter(sec => sec.academicTermId === activeTermId);
                     setSections(currentTermSections);
@@ -60,6 +66,22 @@ export default function RegistrationsView() {
             })
             .finally(() => setLoading(false));
     }, []);
+
+    // 2. NUEVO: Función para simular la matrícula
+    const handleMatricularse = async () => {
+        setSubmitting(true);
+        try {
+            await apiClient.put(`/students/${student.id}/matricular`);
+            // Actualizamos el estado para que desaparezca esta vista inmediatamente
+            setStudent({ ...student, matriculation: true });
+            alert("¡Matrícula exitosa! Ya puedes inscribir asignaturas.");
+        } catch (error) {
+            console.error("Error al intentar matricularse", error);
+            alert("Error al intentar matricularse.");
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     const handleEnroll = () => {
         if (!selectedSectionId) return;
@@ -100,6 +122,12 @@ export default function RegistrationsView() {
         return myRegistrations.some(reg => reg.sectionId === sectionId);
     };
 
+    // --- RENDERIZADOS CONDICIONALES --- //
+
+    if (loading) {
+        return <div className="container mt-5 text-center">Cargando información...</div>;
+    }
+
     if (!loading && !currentTermId) {
         return (
             <div className="container mt-5">
@@ -117,6 +145,36 @@ export default function RegistrationsView() {
         );
     }
 
+    // 3. NUEVO: Pantalla de bloqueo si el estudiante no está matriculado
+    if (student && !student.matriculation) {
+        return (
+            <div className="container mt-5">
+                <div className="card text-center shadow-sm p-5 border-info">
+                    <h3 className="text-info-emphasis mb-3">
+                        <i className="bi bi-file-earmark-person-fill me-2"></i>
+                        Proceso de Matrícula Pendiente
+                    </h3>
+                    <p className="fs-5 text-muted mb-4">
+                        Para poder realizar la inscripción de asignaturas, primero debes estar matriculado en el periodo académico actual.
+                    </p>
+                    <button
+                        className="btn btn-success btn-lg mx-auto"
+                        onClick={handleMatricularse}
+                        disabled={submitting}
+                        style={{ maxWidth: '300px' }}
+                    >
+                        {submitting ? (
+                            <span><span className="spinner-border spinner-border-sm me-2" />Procesando...</span>
+                        ) : (
+                            <span><i className="bi bi-check-circle me-2"></i>Simular Matrícula</span>
+                        )}
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // --- PANTALLA PRINCIPAL: TOMA DE RAMOS --- //
     return (
         <div className="container mt-4">
             <h2 className="mb-4"><i className="bi bi-laptop me-2"></i>Toma de Ramos</h2>
@@ -128,9 +186,7 @@ export default function RegistrationsView() {
                             <strong>Asignaturas Disponibles</strong>
                         </div>
                         <div className="card-body p-0">
-                            {loading ? (
-                                <div className="p-4 text-center text-muted">Cargando oferta...</div>
-                            ) : sections.length === 0 ? (
+                            {sections.length === 0 ? (
                                 <div className="p-4 text-center text-muted">No hay asignaturas ofertadas en este periodo.</div>
                             ) : (
                                 <div className="list-group list-group-flush">
@@ -192,9 +248,7 @@ export default function RegistrationsView() {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {loading ? (
-                                        <tr><td colSpan="4" className="text-center py-4">Cargando carga académica...</td></tr>
-                                    ) : myRegistrations.length === 0 ? (
+                                    {myRegistrations.length === 0 ? (
                                         <tr><td colSpan="4" className="text-center py-4 text-muted">Aún no has inscrito ninguna asignatura.</td></tr>
                                     ) : (
                                         myRegistrations.map(reg => {

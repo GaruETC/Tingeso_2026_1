@@ -9,6 +9,7 @@ import com.example.demo.Entity.Enum.StudyPlanStatus;
 import com.example.demo.DTO.StudentDto;
 import com.example.demo.Repository.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -164,7 +165,7 @@ public class StudentService {
             student.setFullName(studentDto.fullName());
             student.setCareerId(studentDto.careerId());
             student.setStudyPlanId(studyPlan.getId());
-            student.setMatriculation(true);
+            student.setMatriculation(false);
             student.setStatus(StudentStatus.REGULAR);
 
             return studentRepository.save(student);
@@ -188,5 +189,14 @@ public class StudentService {
 
         student.setStatus(status);
         studentRepository.save(student);
+    }
+
+    @Transactional
+    public StudentEntity matricularEstudiante(Long id) {
+        StudentEntity student = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+
+        student.setMatriculation(true);
+        return studentRepository.save(student);
     }
 }

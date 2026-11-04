@@ -6,6 +6,7 @@ import com.example.demo.Entity.Enum.AcademicHistorialStatus;
 import com.example.demo.Entity.Enum.AcademicTermStatus;
 import com.example.demo.Entity.Enum.StudentStatus;
 import com.example.demo.Repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -77,6 +78,7 @@ public class AcademicTermService {
         return academicTermRepository.save(term);
     }
 
+    @Transactional
     public void closeAcademicTerm(Long termId){
         AcademicTermEntity term = getAcademicTermById(termId);
         if (!term.getStatus().equals(AcademicTermStatus.ABIERTO)){
@@ -123,14 +125,14 @@ public class AcademicTermService {
             academicHistorialRepository.save(historial);
 
             StudentEntity student = studentService.getStudentById(reg.getStudentId());
-            if (!passed){ // if has failed 2 times the same subject
+            if (!passed){ // if student has failed 2 times the same subject
                 int failedCount = academicHistorialRepository
                         .countByStudentIdAndSubjectIdAndStatus(reg.getStudentId(), section.getSubjectId(), AcademicHistorialStatus.REPROBADO);
                 if (failedCount >= 2){
                     student.setStatus(StudentStatus.ELIMINADO);
                     studentRepository.save(student);
                 }
-            } else{ // if has passed all subjects in his studyplan
+            } else{ // if student has passed all subjects in his studyplan
                 int totalPlanSubjects = subjectRepository.countByStudyPlanId(student.getStudyPlanId());
                 int totalApprovedSubjects = academicHistorialRepository
                         .countByStudentIdAndStatus(reg.getStudentId(), AcademicHistorialStatus.APROBADO);
@@ -142,5 +144,7 @@ public class AcademicTermService {
         }
         term.setStatus(AcademicTermStatus.CERRADO);
         academicTermRepository.save(term);
+
+        studentRepository.resetAllMatriculations();
     }
 }
