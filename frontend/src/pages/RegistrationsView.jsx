@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import apiClient from '../services/http-common';
 
 export default function RegistrationsView() {
-    // 1. NUEVO: Agregamos el estado para guardar todo el objeto del estudiante
     const [student, setStudent] = useState(null);
 
     const [currentStudentId, setCurrentStudentId] = useState(null);
@@ -37,7 +36,6 @@ export default function RegistrationsView() {
                     return;
                 }
 
-                // Guardamos el objeto completo del estudiante
                 setStudent(studentData);
                 setCurrentStudentId(studentData.id);
 
@@ -67,12 +65,10 @@ export default function RegistrationsView() {
             .finally(() => setLoading(false));
     }, []);
 
-    // 2. NUEVO: Función para simular la matrícula
     const handleMatricularse = async () => {
         setSubmitting(true);
         try {
             await apiClient.put(`/students/${student.id}/matricular`);
-            // Actualizamos el estado para que desaparezca esta vista inmediatamente
             setStudent({ ...student, matriculation: true });
             alert("¡Matrícula exitosa! Ya puedes inscribir asignaturas.");
         } catch (error) {
@@ -122,8 +118,6 @@ export default function RegistrationsView() {
         return myRegistrations.some(reg => reg.sectionId === sectionId);
     };
 
-    // --- RENDERIZADOS CONDICIONALES --- //
-
     if (loading) {
         return <div className="container mt-5 text-center">Cargando información...</div>;
     }
@@ -145,7 +139,6 @@ export default function RegistrationsView() {
         );
     }
 
-    // 3. NUEVO: Pantalla de bloqueo si el estudiante no está matriculado
     if (student && !student.matriculation) {
         return (
             <div className="container mt-5">
@@ -166,7 +159,7 @@ export default function RegistrationsView() {
                         {submitting ? (
                             <span><span className="spinner-border spinner-border-sm me-2" />Procesando...</span>
                         ) : (
-                            <span><i className="bi bi-check-circle me-2"></i>Simular Matrícula</span>
+                            <span><i className="bi bi-check-circle me-2"></i>Matrícularse</span>
                         )}
                     </button>
                 </div>
@@ -174,7 +167,6 @@ export default function RegistrationsView() {
         );
     }
 
-    // --- PANTALLA PRINCIPAL: TOMA DE RAMOS --- //
     return (
         <div className="container mt-4">
             <h2 className="mb-4"><i className="bi bi-laptop me-2"></i>Toma de Ramos</h2>
